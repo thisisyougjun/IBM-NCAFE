@@ -1,0 +1,182 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.emptyState {
+    text-align: center;
+    padding: var(--space-8);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    color: var(--color-gray-500);
+    font-size: var(--text-sm);
+}
+
+.addButton {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background-color: white;
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    color: var(--color-gray-700);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.addButton:hover {
+    background-color: var(--color-gray-50);
+    border-color: var(--color-gray-400);
+}
+
+/* OptionGroupItem styles */
+.groupCard {
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    background-color: white;
+    overflow: hidden;
+    transition: all var(--transition-fast);
+}
+
+.groupCard:hover {
+    border-color: var(--color-gray-300);
+    box-shadow: var(--shadow-sm);
+}
+
+.groupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--space-4);
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--color-gray-200);
+    gap: var(--space-4);
+}
+
+.groupInputs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.mainInputs {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.optionNameInput {
+    flex: 2;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.typeSelect {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    background-color: white;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+    cursor: pointer;
+}
+
+.deleteButton {
+    padding: var(--space-2);
+    color: var(--color-gray-400);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.deleteButton:hover {
+    color: var(--color-error);
+}
+
+.itemsSection {
+    padding: var(--space-4);
+}
+
+.itemsLabel {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-gray-500);
+    margin-bottom: var(--space-2);
+    display: block;
+}
+
+.itemList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.itemRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.itemNameInput {
+    flex: 1;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.itemPriceInput {
+    width: 120px;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    text-align: right;
+}
+
+.addItemButton {
+    margin-top: var(--space-2);
+    padding: var(--space-2);
+    color: var(--color-primary-600);
+    background: none;
+    border: none;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.addItemButton:hover {
+    text-decoration: underline;
+}
+
+.dragHandle {
+    cursor: move;
+    color: var(--color-gray-400);
+    display: flex;
+    align-items: center;
+}
+
+.errorText {
+    color: var(--color-error);
+    font-size: var(--text-xs);
+    margin-top: 2px;
+}

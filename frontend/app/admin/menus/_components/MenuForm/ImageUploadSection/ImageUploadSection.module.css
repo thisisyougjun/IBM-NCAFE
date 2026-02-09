@@ -1,0 +1,154 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.dropzone {
+    border: 2px dashed var(--color-gray-300);
+    border-radius: var(--radius-md);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: center;
+    gap: var(--space-3);
+    min-height: 200px;
+}
+
+.dropzone:hover,
+.dropzoneActive {
+    border-color: var(--color-primary-500);
+    background-color: var(--color-primary-50);
+}
+
+.dropzoneIcon {
+    color: var(--color-gray-400);
+    transition: color var(--transition-fast);
+}
+
+.dropzone:hover .dropzoneIcon {
+    color: var(--color-primary-500);
+}
+
+.dropzoneText {
+    color: var(--color-gray-600);
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.dropzoneSubText {
+    color: var(--color-gray-400);
+    font-size: var(--text-xs);
+}
+
+/* Image Grid */
+.imageGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+}
+
+.imageCard {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: white;
+    border: 1px solid var(--color-gray-200);
+    aspect-ratio: 1;
+}
+
+.imagePreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-2);
+}
+
+.imageCard:hover .overlay {
+    opacity: 1;
+}
+
+.primaryBadge {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    background-color: var(--color-primary-500);
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    z-index: 5;
+    box-shadow: var(--shadow-sm);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-1);
+}
+
+.actionButton {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: var(--radius-md);
+    color: var(--color-gray-700);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.actionButton:hover {
+    background-color: var(--color-gray-100);
+    transform: scale(1.05);
+}
+
+.deleteButton:hover {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.primaryButton {
+    width: 100%;
+    margin-top: auto;
+    padding: var(--space-1) 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--color-gray-700);
+    cursor: pointer;
+}
+
+.primaryButton:hover {
+    background-color: white;
+    color: var(--color-primary-600);
+}
+
+.errorText {
+    color: var(--color-error);
+    font-size: var(--text-xs);
+    margin-top: var(--space-2);
+}

@@ -1,0 +1,23 @@
+.layout {
+    min-height: 100vh;
+}
+
+.pageWrapper {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    padding: var(--space-6);
+    background-color: var(--bg-secondary);
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+    .pageWrapper {
+        margin-left: 0;
+    }
+}

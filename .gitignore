@@ -1,0 +1,23 @@
+# Root
+.DS_Store
+Thumbs.db
+*.log
+
+# Frontend
+/frontend/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/dist/
+/frontend/.turbo/
+/frontend/.cache/
+
+# Backend
+/backend/build/
+/backend/.gradle/
+/backend/out/
+/backend/target/
+/backend/lib/
+
+# Env files
+.env
+.env.*
