@@ -27,7 +27,10 @@ export default function MenusPageHeader({
             엑셀 다운로드
           </Button>
           <Link href="/admin/menus/new">
-            <Button icon={<Plus size={16} />}>메뉴 등록</Button>
+            <Button>
+              <Plus size={16} />
+              메뉴 등록
+            </Button>
           </Link>
         </div>
       </div>
