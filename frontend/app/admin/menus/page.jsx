@@ -25,7 +25,7 @@ export default function MenusPage() {
       const response = await fetch(url);
       const data = await response.json();
       // menus = data;
-      setMenus(data);
+      setMenus(data.menus);
     };
 
     fetchMenus(); // 여기서 fatch 하는 것이 올바른 곳일까요?
