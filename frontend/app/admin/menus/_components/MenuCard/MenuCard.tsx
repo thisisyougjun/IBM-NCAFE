@@ -1,31 +1,24 @@
-import { Menu } from "@/types";
 import styles from "./MenuCard.module.css";
 import Image from "next/image";
 import Button from "@/components/common/Button";
 import { Edit, Trash, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { MenuResponse } from "../MenuList/useMenus";
 
 interface MenuCardProps {
-  menu: Menu;
-  onToggleSoldOut: (id: string, isSoldOut: boolean) => void;
-  onDelete: (id: string) => void;
+  menu: MenuResponse;
 }
 
-export default function MenuCard({
-  menu,
-  onToggleSoldOut,
-  onDelete,
-}: MenuCardProps) {
-  const primaryImage =
-    menu.images.find((img) => img.isPrimary) || menu.images[0];
-
+export default function MenuCard({ menu }: MenuCardProps) {
   return (
     <div className={styles.card}>
-      <Link href={`/admin/menus/${menu.id}`} className={styles.link}>
-        <div className={styles.imageWrapper}>
-          {primaryImage ? (
+      <div className={styles.imageWrapper}>
+        <Link href={`/admin/menus/${menu.id}`}>
+          {menu.imageSrc ? (
+            // http://localhost:8080/api/v1/admin/menus
+            // http://localhost:3000/api/v1/images/1.jpg
             <Image
-              src={primaryImage.url}
+              src={`/images/${menu.imageSrc}`}
               alt={menu.korName}
               fill
               className={styles.image}
@@ -34,33 +27,28 @@ export default function MenuCard({
           ) : (
             <div className={styles.noImage}>No Image</div>
           )}
-          <div className={styles.badges}>
-            {menu.isSoldOut && (
-              <span className={styles.badgeSoldOut}>품절</span>
-            )}
-            {!menu.isAvailable && (
-              <span className={styles.badgeHidden}>숨김</span>
-            )}
-          </div>
+        </Link>
+        <div className={styles.badges}>
+          {menu.isSoldOut && <span className={styles.badgeSoldOut}>품절</span>}
+          {!menu.isAvailable && (
+            <span className={styles.badgeHidden}>숨김</span>
+          )}
         </div>
-      </Link>
+      </div>
 
       <div className={styles.content}>
-        <Link href={`/admin/menus/${menu.id}`} className={styles.link}>
-          <div className={styles.header}>
+        <div className={styles.header}>
+          <Link href={`/admin/menus/${menu.id}`} className={styles.nameLink}>
             <h3 className={styles.name}>{menu.korName}</h3>
-            <span className={styles.price}>
-              {menu.price.toLocaleString()}원
-            </span>
-          </div>
-          <p className={styles.engName}>{menu.engName}</p>
-        </Link>
+          </Link>
+          <span className={styles.price}>{menu.price.toLocaleString()}원</span>
+        </div>
+        <p className={styles.engName}>{menu.engName}</p>
 
         <div className={styles.actions}>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => onToggleSoldOut(menu.id, !menu.isSoldOut)}
             className={menu.isSoldOut ? styles.actionActive : ""}
           >
             {menu.isSoldOut ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -70,12 +58,7 @@ export default function MenuCard({
               <Edit size={18} />
             </Button>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={styles.deleteButton}
-            onClick={() => onDelete(menu.id)}
-          >
+          <Button variant="ghost" size="sm" className={styles.deleteButton}>
             <Trash size={18} />
           </Button>
         </div>

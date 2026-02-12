@@ -14,7 +14,8 @@ export default function MenusPage() {
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>(
     undefined,
   );
-  const { menus, setMenus } = useMenus(); // 전체 메뉴 로딩
+  // 커스텀 훅에 상태를 전달하여 필터링된 메뉴를 가져옵니다.
+  const { menus, setMenus } = useMenus(selectedCategory, searchQuery);
 
   return (
     <main>
@@ -24,14 +25,13 @@ export default function MenusPage() {
         setSearchQuery={setSearchQuery}
       />
 
-      {/* 카테고리 탭 (menus 전달) */}
+      {/* 카테고리 탭 */}
       <CategoryTabs
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
-        menus={menus}
       />
 
-      {/* 메뉴 그리드 (menus 전달) */}
+      {/* 메뉴 그리드 */}
       <MenuList
         selectedCategory={selectedCategory}
         searchQuery={searchQuery}

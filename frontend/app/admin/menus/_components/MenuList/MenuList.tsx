@@ -1,13 +1,13 @@
 import { useState, useMemo } from "react";
-import { Menu } from "@/types";
 import MenuCard from "../MenuCard";
 import styles from "./MenuList.module.css";
+import { MenuResponse } from "./useMenus";
 
 interface MenuListProps {
   selectedCategory: number | undefined;
   searchQuery: string | undefined;
-  menus: Menu[];
-  setMenus: React.Dispatch<React.SetStateAction<Menu[]>>;
+  menus: MenuResponse[];
+  setMenus: React.Dispatch<React.SetStateAction<MenuResponse[]>>;
 }
 
 export default function MenuList({
@@ -16,31 +16,14 @@ export default function MenuList({
   menus,
   setMenus,
 }: MenuListProps) {
-  // 필터링된 메뉴 목록 (useMemo로 최적화)
-  const filteredMenus = useMemo(() => {
-    return menus.filter((menu) => {
-      // 카테고리 필터
-      if (
-        selectedCategory &&
-        String(menu.category.id) !== String(selectedCategory)
-      ) {
-        return false;
-      }
-      // 검색어 필터
-      if (searchQuery && !menu.korName.includes(searchQuery)) {
-        return false;
-      }
-      return true;
-    });
-  }, [menus, selectedCategory, searchQuery]);
-
-  const handleToggleSoldOut = (id: string, isSoldOut: boolean) => {
+  // 서버에서 이미 필터링되어 오므로 filteredMenus 로직 제거하고 직접 사용
+  const handleToggleSoldOut = (id: number, isSoldOut: boolean) => {
     setMenus(
       menus.map((menu) => (menu.id === id ? { ...menu, isSoldOut } : menu)),
     );
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     if (window.confirm("정말 이 메뉴를 삭제하시겠습니까?")) {
       setMenus(menus.filter((menu) => menu.id !== id));
     }
@@ -49,12 +32,12 @@ export default function MenuList({
   return (
     <div>
       <div className={styles.grid}>
-        {filteredMenus.map((menu) => (
+        {menus.map((menu) => (
           <MenuCard
             key={menu.id}
             menu={menu}
-            onToggleSoldOut={handleToggleSoldOut}
-            onDelete={handleDelete}
+            // onToggleSoldOut={handleToggleSoldOut} // MenuCard에서 사용하도록 추가 가능
+            // onDelete={handleDelete}
           />
         ))}
       </div>
