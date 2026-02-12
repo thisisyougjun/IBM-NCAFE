@@ -23,6 +23,7 @@ public class MenuImageListResponse {
     public static class MenuImageDto {
         private Long id;
         private String url;
+        private String altText;
         private Boolean isPrimary;
         private Integer sortOrder;
     }

@@ -125,6 +125,7 @@ public class NewMenuService implements MenuService {
             images.add(MenuImageListResponse.MenuImageDto.builder()
                     .id(img.getId())
                     .url(img.getSrcUrl())
+                    .altText(menu.getKorName())
                     .isPrimary(isPrimary)
                     .sortOrder(img.getSortOrder())
                     .build());
