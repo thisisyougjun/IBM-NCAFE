@@ -14,8 +14,8 @@ export function useMenuDetail(id: string) {
 
         // 메뉴 상세 정보와 이미지 목록을 병렬로 호출
         const [menuResponse, imagesResponse] = await Promise.all([
-          fetch(`http://localhost:8080/admin/menus/${id}`),
-          fetch(`http://localhost:8080/admin/menus/${id}/menu-images`),
+          fetch(`/api/admin/menus/${id}`),
+          fetch(`/api/admin/menus/${id}/menu-images`),
         ]);
 
         if (!menuResponse.ok) {
@@ -36,9 +36,9 @@ export function useMenuDetail(id: string) {
               let imageUrl = img.url;
               if (!imageUrl.startsWith("http")) {
                 if (imageUrl.startsWith("/")) {
-                  imageUrl = `http://localhost:8080${imageUrl}`;
+                  imageUrl = `/api${imageUrl}`;
                 } else {
-                  imageUrl = `http://localhost:8080/image/${imageUrl}`;
+                  imageUrl = `/api/image/${imageUrl}`;
                 }
               }
 
@@ -74,7 +74,7 @@ export function useMenuDetail(id: string) {
                       id: "1",
                       url: menuDataRes.imageSrc.startsWith("http")
                         ? menuDataRes.imageSrc
-                        : `http://localhost:8080${menuDataRes.imageSrc}`,
+                        : `/api${menuDataRes.imageSrc}`,
                       isPrimary: true,
                       sortOrder: 0,
                     },

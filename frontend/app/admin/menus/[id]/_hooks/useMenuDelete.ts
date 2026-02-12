@@ -10,7 +10,7 @@ export function useMenuDelete(menuId: string) {
 
     try {
       // TODO: 실제 백엔드 삭제 API 호출
-      // const response = await fetch(`http://localhost:8080/admin/menus/${menuId}`, {
+      // const response = await fetch(`/api/admin/menus/${menuId}`, {
       //   method: 'DELETE',
       // });
       //
