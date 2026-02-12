@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.new_cafe.app.backend.dto.MenuListRequest;
@@ -17,6 +18,7 @@ import com.new_cafe.app.backend.dto.MenuDetailResponse;
 import com.new_cafe.app.backend.dto.MenuImageListResponse;
 
 @RestController
+@RequestMapping("/admin/menus")
 public class MenuController {
 
     private MenuService menuService;
@@ -25,34 +27,26 @@ public class MenuController {
         this.menuService = menuService;
     }
 
-    // 목록 조회 데이터 반환
-    @GetMapping("/admin/menus")
-    public MenuListResponse menu(MenuListRequest request) {
+    @GetMapping
+    public MenuListResponse getMenus(MenuListRequest request) {
         MenuListResponse response = menuService.getMenus(request);
         return response;
     }
 
-    // 상세 조회 데이터 반환
-    @GetMapping("/admin/menus/{id}")
-    public MenuDetailResponse getMenuDetail(@PathVariable Long id) {
+    // 상세 조회 데이터 반환 /admin/menus/3
+    @GetMapping("/{id}")
+    public MenuDetailResponse getMenu(@PathVariable Long id) {
         MenuDetailResponse response = menuService.getMenu(id);
         return response;
     }
 
-    // 메뉴 이미지 목록 조회
-    @GetMapping("/admin/menus/{id}/menu-images")
-    public MenuImageListResponse getMenuImages(@PathVariable Long id) {
-        MenuImageListResponse response = menuService.getMenuImages(id);
-        return response;
-    }
-
     // 메뉴 생성 데이터 입력
-    @PostMapping("/admin/menus")
+    @PostMapping
     public String newMenu(Menu menu) {
         return "newMenu";
     }
 
-    @PutMapping("path/{id}")
+    @PutMapping("/{id}")
     public String editMenu(Menu menu) {
         // TODO: process PUT request
 
@@ -60,8 +54,14 @@ public class MenuController {
     }
 
     // 메뉴 삭제 데이터 입력
-    @DeleteMapping("/admin/menus/{id}")
+    @DeleteMapping("/{id}")
     public String deleteMenu() {
         return "deleteMenu";
+    }
+
+    @GetMapping("/{id}/menu-images")
+    public MenuImageListResponse getMenuImages(@PathVariable Long id) {
+        MenuImageListResponse response = menuService.getMenuImages(id);
+        return response;
     }
 }
