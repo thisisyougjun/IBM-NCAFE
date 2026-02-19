@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ncafe-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:${INTERNAL_DB_PORT}"
+    networks:
+      - ncafe-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ncafe-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT}:${INTERNAL_BACKEND_PORT}"
+    environment:
+      # Use service name 'postgres' for internal communication
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:${INTERNAL_DB_PORT}/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend/upload:/app/upload
+    networks:
+      - ncafe-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ncafe-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:${INTERNAL_FRONTEND_PORT}"
+    environment:
+      # Use service name 'backend' for internal communication
+      NEXT_PUBLIC_API_URL: http://backend:${INTERNAL_BACKEND_PORT}
+    depends_on:
+      - backend
+    networks:
+      - ncafe-network
+
+volumes:
+  postgres_data:
+
+networks:
+  ncafe-network:
+    driver: bridge
