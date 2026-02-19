@@ -1,0 +1,11 @@
+
+node_modules
+.next
+out
+dist
+.git
+.gitignore
+.vscode
+.idea
+npm-debug.log
+yarn-error.log

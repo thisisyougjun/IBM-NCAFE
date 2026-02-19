@@ -2,19 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    if (process.env.NODE_ENV === "development") {
-      return [
-        {
-          source: "/api/:path*",
-          destination: "http://localhost:8080/:path*",
-        },
-        {
-          source: "/images/:path*",
-          destination: "http://localhost:8080/images/:path*",
-        },
-      ];
-    }
-    return [];
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${API_URL}/:path*`,
+      },
+      {
+        source: "/images/:path*",
+        destination: `${API_URL}/:path*`,
+      },
+    ];
   },
   images: {
     unoptimized: true, // 로컬 개발용
