@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: ncafe-postgres
+    container_name: yj-ncafe-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -18,7 +18,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: ncafe-backend
+    container_name: yj-ncafe-backend
     restart: unless-stopped
     ports:
       - "${BACKEND_PORT}:${INTERNAL_BACKEND_PORT}"
@@ -38,7 +38,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: ncafe-frontend
+    container_name: yj-ncafe-frontend
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT}:${INTERNAL_FRONTEND_PORT}"
