@@ -41,11 +41,13 @@ export function useMenus(
       }
 
       try {
+        console.log("Fetching menus from DB..."); // DB 통신 시작 로그
         const response = await fetch(url.toString());
         if (!response.ok) {
           throw new Error("Failed to fetch menus");
         }
         const data = await response.json();
+        console.log("Fetched menus from DB:", data); // DB 통신 완료 및 데이터 로그
 
         setMenus(data.menus);
 

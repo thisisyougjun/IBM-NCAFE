@@ -1,65 +1,55 @@
-package com.new_cafe.app.backend.service;
+package com.new_cafe.app.backend.menu.application.service;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.new_cafe.app.backend.dto.MenuCreateRequest;
 import com.new_cafe.app.backend.dto.MenuCreateResponse;
 import com.new_cafe.app.backend.dto.MenuDetailResponse;
+import com.new_cafe.app.backend.dto.MenuImageListResponse;
 import com.new_cafe.app.backend.dto.MenuListRequest;
 import com.new_cafe.app.backend.dto.MenuListResponse;
+import com.new_cafe.app.backend.dto.MenuResponse;
 import com.new_cafe.app.backend.dto.MenuUpdateRequest;
 import com.new_cafe.app.backend.dto.MenuUpdateResponse;
-import com.new_cafe.app.backend.dto.MenuResponse;
-import com.new_cafe.app.backend.dto.MenuImageListResponse;
-import com.new_cafe.app.backend.entity.Menu;
-import com.new_cafe.app.backend.entity.MenuImage;
-import com.new_cafe.app.backend.repository.MenuRepository;
-import com.new_cafe.app.backend.repository.MenuImageRepository;
+import com.new_cafe.app.backend.menu.application.port.in.MenuUseCase;
+import com.new_cafe.app.backend.menu.application.port.out.LoadMenuPort;
+import com.new_cafe.app.backend.menu.application.port.out.SaveMenuPort;
+import com.new_cafe.app.backend.menu.domain.Menu;
+import com.new_cafe.app.backend.menu.domain.MenuImage;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
-public class NewMenuService implements MenuService {
+@RequiredArgsConstructor
+public class MenuService implements MenuUseCase {
 
-    private MenuRepository menuRepository;
-    private MenuImageRepository menuImageRepository;
-
-    public NewMenuService(MenuRepository menuRepository, MenuImageRepository menuImageRepository) {
-        this.menuRepository = menuRepository;
-        this.menuImageRepository = menuImageRepository;
-    }
-
-    @Override
-    public MenuCreateResponse createMenu(MenuCreateRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createMenu'");
-    }
+    private final LoadMenuPort loadMenuPort;
+    private final SaveMenuPort saveMenuPort;
 
     @Override
     public MenuListResponse getMenus(MenuListRequest request) {
-
         Integer categoryId = request.getCategoryId();
         String searchQuery = request.getSearchQuery();
 
-        // Menu <----> MenuResponse ----> [] ----> MenuListResponse
-        List<Menu> menus = menuRepository.findAllByCategoryAndSearchQuery(categoryId, searchQuery);
+        List<Menu> menus = loadMenuPort.loadMenusByQuery(categoryId, searchQuery);
 
-        List<MenuResponse> menuResponses = menus
-                .stream()
+        List<MenuResponse> menuResponses = menus.stream()
                 .map(menu -> {
-                    // 이미지 조회
-                    List<MenuImage> images = menuImageRepository.findAllByMenuId(menu.getId());
+                    List<MenuImage> images = loadMenuPort.loadMenuImages(menu.getId());
                     String imageSrc = images.isEmpty() ? null : images.get(0).getSrcUrl();
 
-                    return MenuResponse
-                            .builder()
+                    return MenuResponse.builder()
                             .id(menu.getId())
                             .korName(menu.getKorName())
                             .engName(menu.getEngName())
                             .description(menu.getDescription())
                             .price(menu.getPrice())
                             .categoryId(menu.getCategoryId())
+                            // Example, assuming we don't fetch category details here for simplicity or
+                            // separate port call
                             .categoryName(null)
                             .imageSrc(imageSrc)
                             .isAvailable(menu.getIsAvailable())
@@ -71,31 +61,27 @@ public class NewMenuService implements MenuService {
                 })
                 .toList();
 
-        return MenuListResponse
-                .builder()
+        return MenuListResponse.builder()
                 .menus(menuResponses)
-                .total(100)
+                .total(menus.size()) // Adjusted to actual size or separate count query
                 .build();
     }
 
     @Override
     public MenuDetailResponse getMenu(Long id) {
-        Menu menu = menuRepository.findById(id);
-
-        if (menu == null) {
+        Menu menu = loadMenuPort.loadMenu(id);
+        if (menu == null)
             return null;
-        }
 
-        return MenuDetailResponse
-                .builder()
+        return MenuDetailResponse.builder()
                 .id(menu.getId())
                 .korName(menu.getKorName())
                 .engName(menu.getEngName())
                 .description(menu.getDescription())
                 .price(menu.getPrice())
                 .categoryId(menu.getCategoryId())
-                .categoryName("커피") // TODO: 실제 카테고리 이름으로 변경
-                .imageSrc("/images/coffee.jpg") // TODO: 실제 이미지 경로로 변경
+                .categoryName("Unknown") // Placeholder
+                .imageSrc(null) // Placeholder
                 .isAvailable(menu.getIsAvailable())
                 .isSoldOut(false)
                 .sortOrder(1)
@@ -105,22 +91,33 @@ public class NewMenuService implements MenuService {
     }
 
     @Override
+    public MenuCreateResponse createMenu(MenuCreateRequest request) {
+        // Implement mapping and call saveMenuPort
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public MenuUpdateResponse updateMenu(MenuUpdateRequest request) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public void deleteMenu(Long id) {
+        saveMenuPort.deleteMenu(id);
+    }
+
+    @Override
     public MenuImageListResponse getMenuImages(Long id) {
-        Menu menu = menuRepository.findById(id);
-
-        if (menu == null) {
+        Menu menu = loadMenuPort.loadMenu(id);
+        if (menu == null)
             return null;
-        }
 
-        // DB에서 이미지 목록 조회
-        List<MenuImage> menuImages = menuImageRepository.findAllByMenuId(id);
-
-        // Entity -> DTO 변환
+        List<MenuImage> menuImages = loadMenuPort.loadMenuImages(id);
         List<MenuImageListResponse.MenuImageDto> images = new ArrayList<>();
 
         for (int i = 0; i < menuImages.size(); i++) {
             MenuImage img = menuImages.get(i);
-            boolean isPrimary = (i == 0); // 첫 번째 이미지를 대표 이미지로 설정 (sort_order로 정렬되어 있다고 가정)
+            boolean isPrimary = (i == 0);
 
             images.add(MenuImageListResponse.MenuImageDto.builder()
                     .id(img.getId())
@@ -137,17 +134,4 @@ public class NewMenuService implements MenuService {
                 .images(images)
                 .build();
     }
-
-    @Override
-    public MenuUpdateResponse updateMenu(MenuUpdateRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateMenu'");
-    }
-
-    @Override
-    public void deleteMenu(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteMenu'");
-    }
-
 }

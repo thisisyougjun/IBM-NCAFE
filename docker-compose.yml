@@ -34,6 +34,8 @@ services:
     networks:
       - ncafe-network
 
+      
+
   frontend:
     build:
       context: ./frontend
@@ -56,3 +58,4 @@ volumes:
 networks:
   ncafe-network:
     driver: bridge
+
