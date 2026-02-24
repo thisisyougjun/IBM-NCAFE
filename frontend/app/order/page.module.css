@@ -1,0 +1,531 @@
+/* ===========================================
+   NCAFE - 고객 주문 페이지
+   Premium Cafe Design (Light / Dark Mode)
+   Variables defined in globals.css
+   =========================================== */
+
+/* ── Page ────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  background: var(--order-bg);
+  color: var(--order-text);
+  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ── Header ──────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--order-header-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--order-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.headerInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--order-text);
+  text-decoration: none;
+}
+
+.logo svg {
+  color: var(--order-accent);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.headerTagline {
+  font-size: 0.875rem;
+  color: var(--order-text-secondary);
+  letter-spacing: 0.01em;
+}
+
+/* ── Theme Toggle ────────────────────────── */
+.themeToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.themeToggleTrack {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 52px;
+  height: 28px;
+  border-radius: 100px;
+  background: var(--order-chip-bg);
+  border: 1px solid var(--order-chip-border);
+  padding: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.themeToggle:hover .themeToggleTrack {
+  border-color: var(--order-accent);
+}
+
+.sunIcon {
+  position: absolute;
+  left: 6px;
+  color: #f59e0b;
+  transition: opacity 0.3s ease;
+  opacity: var(--order-sun-opacity);
+}
+
+.moonIcon {
+  position: absolute;
+  right: 6px;
+  color: #6366f1;
+  transition: opacity 0.3s ease;
+  opacity: var(--order-moon-opacity);
+}
+
+.themeToggleThumb {
+  position: absolute;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 100px;
+  background: var(--order-accent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.themeToggleThumbDark {
+  transform: translateX(24px);
+}
+
+/* ── Controls (Search + Category) ────────── */
+.controls {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.searchBox {
+  position: relative;
+  max-width: 400px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--order-text-secondary);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  background: var(--order-input-bg);
+  border: 1px solid var(--order-input-border);
+  border-radius: 12px;
+  color: var(--order-text);
+  font-size: 0.9375rem;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.searchInput::placeholder {
+  color: var(--order-text-muted);
+}
+
+.searchInput:focus {
+  border-color: var(--order-accent);
+  background: var(--order-accent-light);
+  box-shadow: 0 0 0 3px rgba(200, 149, 108, 0.12);
+}
+
+.categoryBar {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.categoryBar::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.125rem;
+  border-radius: 100px;
+  border: 1px solid var(--order-chip-border);
+  background: var(--order-chip-bg);
+  color: var(--order-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.categoryChip:hover {
+  background: var(--order-surface-hover);
+  color: var(--order-text);
+  border-color: var(--order-border-hover);
+}
+
+.categoryActive {
+  background: var(--order-accent);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 12px rgba(200, 149, 108, 0.25);
+}
+
+.categoryActive:hover {
+  color: #fff;
+  border-color: transparent;
+  opacity: 0.9;
+}
+
+/* ── Main ────────────────────────────────── */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 4rem;
+}
+
+/* ── Section Title ───────────────────────── */
+.menuSection {
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--order-text);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--order-border);
+  letter-spacing: -0.01em;
+}
+
+.sectionTitle svg {
+  color: var(--order-accent);
+}
+
+.sectionCount {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--order-text-secondary);
+  background: var(--order-chip-bg);
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+}
+
+/* ── Menu Grid ───────────────────────────── */
+.menuGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ── Card ────────────────────────────────── */
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.card {
+  background: var(--order-surface);
+  border: 1px solid var(--order-border);
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--order-card-shadow);
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--order-border-hover);
+  box-shadow: var(--order-card-shadow-hover);
+}
+
+.cardSoldOut {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Card Image */
+.cardImage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--order-placeholder-bg);
+}
+
+.cardImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card:hover .cardImage img {
+  transform: scale(1.08);
+}
+
+.cardPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--order-text-muted);
+}
+
+.cardPlaceholder svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+}
+
+.soldOutOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.soldOutOverlay span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ef4444;
+  letter-spacing: 0.1em;
+  border: 2px solid #ef4444;
+  padding: 0.4rem 1.2rem;
+  border-radius: 6px;
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background: var(--order-overlay-bg);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.25rem;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.cardOverlayVisible {
+  opacity: 1;
+}
+
+.cardDesc {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--order-text-secondary);
+}
+
+/* Card Body */
+.cardBody {
+  padding: 1.125rem 1.25rem 1.25rem;
+}
+
+.cardCategory {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--order-accent);
+  margin-bottom: 0.375rem;
+}
+
+.cardName {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--order-text);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.125rem;
+}
+
+.cardEngName {
+  font-size: 0.8125rem;
+  color: var(--order-text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardPrice {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--order-text);
+  letter-spacing: -0.02em;
+}
+
+.cardPrice small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--order-text-secondary);
+  margin-left: 0.125rem;
+}
+
+/* ── Loading Skeleton ────────────────────── */
+.loadingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.skeleton {
+  height: 320px;
+  background: var(--order-skeleton-bg);
+  border: 1px solid var(--order-border);
+  border-radius: 20px;
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+/* ── Empty State ─────────────────────────── */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6rem 2rem;
+  color: var(--order-text-muted);
+}
+
+.emptyState svg {
+  opacity: 0.3;
+}
+
+.emptyState p {
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/* ── Footer ──────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--order-border);
+  color: var(--order-text-muted);
+  font-size: 0.75rem;
+}
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .headerInner {
+    padding: 1rem 1.25rem;
+  }
+
+  .headerTagline {
+    display: none;
+  }
+
+  .headerRight {
+    gap: 0.75rem;
+  }
+
+  .controls {
+    padding: 1rem 1.25rem 0.5rem;
+  }
+
+  .searchBox {
+    max-width: 100%;
+  }
+
+  .main {
+    padding: 1rem 1.25rem 3rem;
+  }
+
+  .menuGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .card {
+    border-radius: 16px;
+  }
+
+  .cardBody {
+    padding: 0.875rem 1rem 1rem;
+  }
+
+  .cardName {
+    font-size: 0.9375rem;
+  }
+
+  .cardPrice {
+    font-size: 1.0625rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.125rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .menuGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .logo span {
+    font-size: 1.25rem;
+  }
+
+  .categoryChip {
+    font-size: 0.8125rem;
+    padding: 0.4rem 0.875rem;
+  }
+}

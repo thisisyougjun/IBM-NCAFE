@@ -30,7 +30,7 @@ export function useMenus(
 
   useEffect(() => {
     const fetchMenus = async () => {
-      const url = new URL(`/api/admin/menus`, window.location.origin);
+      const url = new URL(`/api/admin/menu`, window.location.origin);
 
       const params = url.searchParams;
       if (selectedCategory) {
@@ -46,6 +46,19 @@ export function useMenus(
           throw new Error("Failed to fetch menus");
         }
         const data = await response.json();
+
+        console.log("📋 [메뉴 목록] API 응답 데이터:", data);
+        console.log(`📊 총 ${data.total}개 메뉴 로드됨`);
+        console.table(
+          data.menus.map((m: MenuResponse) => ({
+            ID: m.id,
+            메뉴명: m.korName,
+            영문명: m.engName,
+            가격: `${m.price?.toLocaleString()}원`,
+            카테고리: m.categoryName,
+            판매여부: m.isAvailable ? "✅" : "❌",
+          })),
+        );
 
         setMenus(data.menus);
 

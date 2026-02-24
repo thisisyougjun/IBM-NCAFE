@@ -14,8 +14,8 @@ export function useMenuDetail(id: string) {
 
         // 메뉴 상세 정보와 이미지 목록을 병렬로 호출
         const [menuResponse, imagesResponse] = await Promise.all([
-          fetch(`/api/admin/menus/${id}`),
-          fetch(`/api/admin/menus/${id}/menu-images`),
+          fetch(`/api/admin/menu/${id}`),
+          fetch(`/api/admin/menu/${id}/menu-images`),
         ]);
 
         if (!menuResponse.ok) {

@@ -1,120 +1,213 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import { Coffee, Users, TrendingUp, ShoppingCart, ArrowRight } from "lucide-react";
 
 export default function Home() {
-  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const href = e.currentTarget.href;
-    const targetId = href.replace(/.*\#/, "");
-    const elem = document.getElementById(targetId);
-    elem?.scrollIntoView({
-      behavior: "smooth"
-    });
-  };
+  const [scrollY, setScrollY] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsVisible(true);
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className={styles.page}>
-      {/* Hero Section - Apple Style */}
+      {/* ── Navbar ──────────────────────── */}
+      <nav className={styles.nav}>
+        <div className={styles.navInner}>
+          <span className={styles.navLogo}>NCAFE</span>
+          <div className={styles.navLinks}>
+            <Link href="/order">MENU</Link>
+            <Link href="/admin">ADMIN</Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Hero Section ───────────────── */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>IBM NCAFE</h1>
-          <p className={styles.heroSubtitle}>카페 운영의 새로운 기준</p>
-          <div className={styles.heroCtas}>
-            <Link href="/admin" className={styles.ctaPrimary}>
-              시작하기
+          <p
+            className={`${styles.heroSub} ${isVisible ? styles.fadeInUp : ""}`}
+          >
+            SINCE 2026
+          </p>
+          <h1
+            className={`${styles.heroTitle} ${
+              isVisible ? styles.fadeInUp2 : ""
+            }`}
+          >
+            WE BREW
+          </h1>
+          <h2
+            className={`${styles.heroAccent} ${
+              isVisible ? styles.fadeInUp3 : ""
+            }`}
+          >
+            COFFEE
+          </h2>
+          <h1
+            className={`${styles.heroTitle2} ${
+              isVisible ? styles.fadeInUp4 : ""
+            }`}
+          >
+            THAT TASTES DAMN
+          </h1>
+        </div>
+
+        {/* GOOD - 큰 텍스트 */}
+        <div className={styles.heroBottom}>
+          <span
+            className={`${styles.heroGiant} ${
+              isVisible ? styles.fadeInScale : ""
+            }`}
+          >
+            GO
+          </span>
+          <div
+            className={`${styles.heroCircle} ${
+              isVisible ? styles.fadeInMascot : ""
+            }`}
+          >
+            <img
+              src="/images/mascot.png"
+              alt="NCAFE 마스코트"
+              className={styles.mascotImage}
+            />
+          </div>
+          <span
+            className={`${styles.heroGiant} ${
+              isVisible ? styles.fadeInScale2 : ""
+            }`}
+          >
+            OD
+          </span>
+        </div>
+      </section>
+
+      {/* ── Marquee ────────────────────── */}
+      <div className={styles.marqueeWrapper}>
+        <div className={styles.marquee} ref={marqueeRef}>
+          <span>
+            AMERICANO ✦ LATTE ✦ CAPPUCCINO ✦ COLD BREW ✦ ESPRESSO ✦ MOCHA ✦
+            CROISSANT ✦&nbsp;
+          </span>
+          <span>
+            AMERICANO ✦ LATTE ✦ CAPPUCCINO ✦ COLD BREW ✦ ESPRESSO ✦ MOCHA ✦
+            CROISSANT ✦&nbsp;
+          </span>
+        </div>
+      </div>
+
+      {/* ── About Section ──────────────── */}
+      <section className={styles.about}>
+        <div className={styles.aboutGrid}>
+          <div className={styles.aboutLeft}>
+            <p className={styles.aboutLabel}>ABOUT US</p>
+            <h2 className={styles.aboutTitle}>
+              매일 아침,
+              <br />
+              당신의 하루를
+              <br />
+              <span className={styles.aboutHighlight}>깨워줄</span> 한 잔.
+            </h2>
+          </div>
+          <div className={styles.aboutRight}>
+            <p className={styles.aboutText}>
+              NCAFE는 엄선된 원두만을 사용하여 최고의 커피를 만들어냅니다.
+              바리스타의 정성이 담긴 한 잔 한 잔이 당신의 일상에 작은 여유를
+              선물합니다.
+            </p>
+            <p className={styles.aboutText}>
+              디저트와 음료 모두 매일 신선하게 준비되며, 최상의 재료만으로
+              정직하게 만듭니다.
+            </p>
+            <div className={styles.aboutStats}>
+              <div className={styles.stat}>
+                <span className={styles.statNumber}>17+</span>
+                <span className={styles.statLabel}>메뉴</span>
+              </div>
+              <div className={styles.stat}>
+                <span className={styles.statNumber}>5</span>
+                <span className={styles.statLabel}>카테고리</span>
+              </div>
+              <div className={styles.stat}>
+                <span className={styles.statNumber}>100%</span>
+                <span className={styles.statLabel}>신선한 원두</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Categories Section ─────────── */}
+      <section className={styles.categories}>
+        <h2 className={styles.catTitle}>
+          OUR
+          <br />
+          <span className={styles.catAccent}>MENU</span>
+        </h2>
+
+        <div className={styles.catGrid}>
+          {[
+            { name: "커피", eng: "COFFEE", emoji: "☕", count: "6" },
+            { name: "논커피", eng: "NON-COFFEE", emoji: "🥛", count: "3" },
+            { name: "디저트", eng: "DESSERT", emoji: "🍰", count: "3" },
+            { name: "스무디/주스", eng: "SMOOTHIE", emoji: "🥤", count: "2" },
+            { name: "티", eng: "TEA", emoji: "🍵", count: "3" },
+          ].map((cat, i) => (
+            <Link
+              key={cat.eng}
+              href="/order"
+              className={styles.catCard}
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              <span className={styles.catEmoji}>{cat.emoji}</span>
+              <div className={styles.catInfo}>
+                <h3 className={styles.catName}>{cat.eng}</h3>
+                <p className={styles.catKor}>{cat.name}</p>
+              </div>
+              <span className={styles.catCount}>{cat.count}</span>
             </Link>
-            <a href="#learn-more" className={styles.ctaSecondary} onClick={handleSmoothScroll}>
-              더 알아보기 <ArrowRight size={16} />
-            </a>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Product Highlight 1 - Dark Background */}
-      <section className={styles.productSection} id="learn-more">
-        <div className={styles.productContent}>
-          <h2 className={styles.productTitle}>메뉴 관리</h2>
-          <p className={styles.productSubtitle}>
-            직관적인 인터페이스로 메뉴를 손쉽게 관리하세요
-          </p>
-          <div className={styles.productFeatures}>
-            <div className={styles.productFeature}>
-              <Coffee size={24} />
-              <span>빠른 메뉴 등록</span>
-            </div>
-            <div className={styles.productFeature}>
-              <TrendingUp size={24} />
-              <span>실시간 재고 관리</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Product Highlight 2 - Light Background */}
-      <section className={styles.productSectionLight}>
-        <div className={styles.productContent}>
-          <h2 className={styles.productTitleDark}>매출 분석</h2>
-          <p className={styles.productSubtitleDark}>
-            데이터 기반 의사결정으로 더 나은 비즈니스를 만드세요
-          </p>
-          <div className={styles.productFeaturesDark}>
-            <div className={styles.productFeatureDark}>
-              <TrendingUp size={24} />
-              <span>실시간 매출 현황</span>
-            </div>
-            <div className={styles.productFeatureDark}>
-              <ShoppingCart size={24} />
-              <span>주문 통계 및 분석</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Product Highlight 3 - Dark Background */}
-      <section className={styles.productSection}>
-        <div className={styles.productContent}>
-          <h2 className={styles.productTitle}>직원 관리</h2>
-          <p className={styles.productSubtitle}>
-            역할별 권한으로 안전하고 효율적인 운영 환경을 제공합니다
-          </p>
-          <div className={styles.productFeatures}>
-            <div className={styles.productFeature}>
-              <Users size={24} />
-              <span>직원 권한 관리</span>
-            </div>
-            <div className={styles.productFeature}>
-              <ShoppingCart size={24} />
-              <span>주문 처리 시스템</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className={styles.ctaSection}>
+      {/* ── CTA Section ────────────────── */}
+      <section className={styles.cta}>
         <div className={styles.ctaContent}>
-          <h2 className={styles.ctaTitle}>지금 시작하세요</h2>
-          <p className={styles.ctaText}>더 나은 카페 운영의 시작</p>
-          <Link href="/admin" className={styles.ctaButton}>
-            무료로 시작하기
+          <p className={styles.ctaLabel}>ORDER NOW</p>
+          <h2 className={styles.ctaTitle}>
+            지금 바로
+            <br />
+            <span className={styles.ctaAccent}>메뉴</span>를<br />
+            확인하세요
+          </h2>
+          <Link href="/order" className={styles.ctaButton}>
+            메뉴 보러 가기
+            <span className={styles.ctaArrow}>→</span>
           </Link>
         </div>
       </section>
 
-      {/* Footer - Apple Style */}
+      {/* ── Footer ─────────────────────── */}
       <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerLinks}>
-            <a href="#menu" onClick={handleSmoothScroll}>메뉴 관리</a>
-            <a href="#sales" onClick={handleSmoothScroll}>매출 분석</a>
-            <a href="#staff" onClick={handleSmoothScroll}>직원 관리</a>
-            <a href="#support" onClick={handleSmoothScroll}>고객 지원</a>
+        <div className={styles.footerInner}>
+          <div className={styles.footerBrand}>
+            <span className={styles.footerLogo}>NCAFE</span>
+            <p>커피 한 잔의 여유</p>
           </div>
-          <p className={styles.footerCopyright}>
-            Copyright © 2026 IBM NCAFE. All rights reserved.
+          <div className={styles.footerLinks}>
+            <Link href="/order">메뉴</Link>
+            <Link href="/admin">관리자</Link>
+          </div>
+          <p className={styles.footerCopy}>
+            © 2026 IBM NCAFE. All rights reserved.
           </p>
         </div>
       </footer>

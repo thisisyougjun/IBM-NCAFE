@@ -1,0 +1,554 @@
+/* ===========================================
+   NCAFE - 메뉴 상세 페이지
+   Premium Detail View (Light / Dark Mode)
+   Variables defined in globals.css
+   =========================================== */
+
+/* ── Page ────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  background: var(--order-bg);
+  color: var(--order-text);
+  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ── Header ──────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--order-header-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--order-border);
+  transition: background 0.3s ease;
+}
+
+.headerInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.875rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--order-accent);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+  min-width: 80px;
+}
+
+.backButton:hover {
+  opacity: 0.7;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--order-text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.logo svg {
+  color: var(--order-accent);
+}
+
+.themeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 100px;
+  border: 1px solid var(--order-border);
+  background: var(--order-surface);
+  color: var(--order-text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  min-width: 36px;
+}
+
+.themeToggle:hover {
+  border-color: var(--order-accent);
+  color: var(--order-accent);
+}
+
+/* ── Hero Image ──────────────────────────── */
+.hero {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.heroImage {
+  position: relative;
+  width: 100%;
+  max-height: 500px;
+  aspect-ratio: 16 / 9;
+  border-radius: 24px;
+  overflow: hidden;
+  margin-top: 1.5rem;
+  background: var(--order-placeholder-bg);
+  box-shadow: var(--order-card-shadow);
+}
+
+.heroImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--order-text-muted);
+  opacity: 0.4;
+}
+
+/* Image Navigation */
+.imageNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 100px;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 2;
+}
+
+.imageNav:hover {
+  background: rgba(0, 0, 0, 0.55);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.imageNavPrev {
+  left: 1rem;
+}
+
+.imageNavNext {
+  right: 1rem;
+}
+
+.imageDots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 100px;
+  border: none;
+  background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s ease;
+}
+
+.dotActive {
+  background: #fff;
+  width: 24px;
+}
+
+/* ── Content ─────────────────────────────── */
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.contentInner {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 2.5rem 0;
+}
+
+/* Badges */
+.badges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.categoryBadge {
+  padding: 0.3rem 0.85rem;
+  background: var(--order-accent-light);
+  color: var(--order-accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border-radius: 100px;
+  letter-spacing: 0.01em;
+}
+
+.availableBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.75rem;
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 100px;
+}
+
+.soldOutBadge {
+  padding: 0.3rem 0.75rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 100px;
+}
+
+/* Title */
+.menuName {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin-bottom: 0.375rem;
+  color: var(--order-text);
+}
+
+.menuEngName {
+  font-size: 1.0625rem;
+  color: var(--order-text-secondary);
+  font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+/* Price */
+.priceBox {
+  margin-bottom: 2rem;
+}
+
+.price {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--order-accent);
+  letter-spacing: -0.02em;
+}
+
+.price small {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--order-text-secondary);
+  margin-left: 0.125rem;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--order-border);
+  margin-bottom: 2rem;
+}
+
+/* Description */
+.descriptionSection {
+  margin-bottom: 2rem;
+}
+
+.sectionLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--order-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.description {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--order-text-secondary);
+}
+
+/* Info Table */
+.infoTable {
+  background: var(--order-surface);
+  border: 1px solid var(--order-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+}
+
+.infoRow + .infoRow {
+  border-top: 1px solid var(--order-border);
+}
+
+.infoLabel {
+  font-size: 0.875rem;
+  color: var(--order-text-secondary);
+}
+
+.infoValue {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--order-text);
+}
+
+/* ── Related Section ─────────────────────── */
+.relatedSection {
+  background: var(--order-related-bg);
+  padding: 0 2rem;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.relatedTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--order-text);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.relatedCard {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: var(--order-surface);
+  border: 1px solid var(--order-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--order-card-shadow);
+}
+
+.relatedCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--order-card-shadow-hover);
+}
+
+.relatedImage {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--order-placeholder-bg);
+}
+
+.relatedImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.relatedCard:hover .relatedImage img {
+  transform: scale(1.06);
+}
+
+.relatedPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--order-text-muted);
+  opacity: 0.4;
+}
+
+.relatedInfo {
+  padding: 0.875rem 1rem;
+}
+
+.relatedInfo h3 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--order-text);
+  margin-bottom: 0.25rem;
+}
+
+.relatedInfo p {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--order-accent);
+}
+
+/* ── Footer ──────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--order-border);
+  color: var(--order-text-muted);
+  font-size: 0.75rem;
+}
+
+/* ── Loading / Empty ─────────────────────── */
+.loadingContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+}
+
+.skeletonHero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 24px;
+  background: var(--order-surface);
+  border: 1px solid var(--order-border);
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+}
+
+.skeletonContent {
+  padding: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonTitle {
+  width: 50%;
+  height: 2rem;
+  border-radius: 8px;
+  background: var(--order-surface);
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+}
+
+.skeletonText {
+  width: 80%;
+  height: 1rem;
+  border-radius: 8px;
+  background: var(--order-surface);
+  animation: shimmer 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 8rem 2rem;
+  color: var(--order-text-muted);
+}
+
+.emptyState svg {
+  opacity: 0.3;
+}
+
+.emptyState p {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.backLink {
+  color: var(--order-accent);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.backLink:hover {
+  opacity: 0.7;
+}
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 768px) {
+  .headerInner {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .hero {
+    padding: 0 1rem;
+  }
+
+  .heroImage {
+    border-radius: 16px;
+    margin-top: 1rem;
+  }
+
+  .content {
+    padding: 0 1.25rem;
+  }
+
+  .contentInner {
+    padding: 2rem 0;
+  }
+
+  .menuName {
+    font-size: 1.75rem;
+  }
+
+  .relatedSection {
+    padding: 0 1.25rem;
+  }
+
+  .relatedGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .imageNav {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroImage {
+    border-radius: 12px;
+    aspect-ratio: 4 / 3;
+  }
+
+  .relatedGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -2,5 +2,6 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.autobuild.enabled": true,
-    "java.debug.settings.hotCodeReplace": "auto"
+    "java.debug.settings.hotCodeReplace": "auto",
+    "remote.autoForwardPortsFallback": 0
 }
