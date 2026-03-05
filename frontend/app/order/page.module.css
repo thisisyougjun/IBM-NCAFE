@@ -429,6 +429,7 @@
   0% {
     opacity: 0.3;
   }
+
   100% {
     opacity: 0.7;
   }
@@ -528,4 +529,54 @@
     font-size: 0.8125rem;
     padding: 0.4rem 0.875rem;
   }
+}
+
+/* ── User Area (로그인 상태) ─────────────── */
+.userArea {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--order-accent);
+}
+
+.userName {
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logoutBtn {
+  background: none;
+  border: none;
+  color: var(--order-text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.logoutBtn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.loginBtn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  background: var(--order-accent);
+  color: #fff;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.loginBtn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
 }

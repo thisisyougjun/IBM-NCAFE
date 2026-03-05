@@ -1,7 +1,9 @@
 "use client";
 
-import { Search, Bell, HelpCircle } from "lucide-react";
+import { Search, Bell, HelpCircle, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import ThemeToggle from "../ThemeToggle";
+import { authAPI } from "@/app/lib/api";
 import styles from "./AdminHeader.module.css";
 
 interface AdminHeaderProps {
@@ -17,6 +19,14 @@ export default function AdminHeader({
   onSearch,
   searchPlaceholder = "검색...",
 }: AdminHeaderProps) {
+  const router = useRouter();
+
+  async function handleLogout() {
+    await authAPI.logout();
+    router.push("/admin/login");
+    router.refresh();
+  }
+
   return (
     <header className={styles.header}>
       <div className={styles.left}>
@@ -45,6 +55,16 @@ export default function AdminHeader({
 
         <button className={styles.iconButton}>
           <HelpCircle size={20} />
+        </button>
+
+        <button
+          id="logout-button"
+          className={styles.iconButton}
+          onClick={handleLogout}
+          title="로그아웃"
+          aria-label="로그아웃"
+        >
+          <LogOut size={20} />
         </button>
       </div>
     </header>

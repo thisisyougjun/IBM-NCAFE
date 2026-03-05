@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { useTheme } from "@/app/_components/ThemeProvider";
+import { authAPI } from "@/app/lib/api";
 import {
   Coffee,
   IceCreamCone,
@@ -13,6 +15,8 @@ import {
   Search,
   Sun,
   Moon,
+  User,
+  LogOut,
 } from "lucide-react";
 
 /* ── 타입 정의 ───────────────────────────── */
@@ -45,11 +49,36 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 
 export default function OrderPage() {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  // BFF 세션 기반 로그인 상태 확인
+  useEffect(() => {
+    authAPI.getSession().then((data) => {
+      setUserName(data?.user?.name || null);
+    }).catch(() => setUserName(null));
+
+    const onLogin = () => authAPI.getSession().then((d) => setUserName(d?.user?.name || null));
+    const onLogout = () => setUserName(null);
+    window.addEventListener("login", onLogin);
+    window.addEventListener("logout", onLogout);
+    return () => {
+      window.removeEventListener("login", onLogin);
+      window.removeEventListener("logout", onLogout);
+    };
+  }, []);
+
+  async function handleLogout() {
+    await authAPI.logout();
+    setUserName(null);
+    window.dispatchEvent(new Event("logout"));
+    router.refresh();
+  }
 
   /* 카테고리 & 메뉴 데이터 fetch */
   useEffect(() => {
@@ -132,6 +161,24 @@ export default function OrderPage() {
                 />
               </span>
             </button>
+
+            {userName ? (
+              <div className={styles.userArea}>
+                <User size={16} />
+                <span className={styles.userName}>{userName}님</span>
+                <button
+                  className={styles.logoutBtn}
+                  onClick={handleLogout}
+                  aria-label="로그아웃"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className={styles.loginBtn}>
+                로그인
+              </Link>
+            )}
           </div>
         </div>
       </header>

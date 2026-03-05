@@ -1,59 +1,50 @@
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: yj-ncafe-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "${DB_PORT}:${INTERNAL_DB_PORT}"
-    networks:
-      - ncafe-network
-
   backend:
+    image: ${BACKEND_IMAGE:-ncafe-backend:latest}
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: yj-ncafe-backend
-    restart: unless-stopped
+    container_name: yj-dev-backend
     ports:
-      - "${BACKEND_PORT}:${INTERNAL_BACKEND_PORT}"
-    environment:
-      # Use service name 'postgres' for internal communication
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:${INTERNAL_DB_PORT}/${POSTGRES_DB}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-    depends_on:
-      - postgres
+      - "8065:8081"
     volumes:
-      - ./backend/upload:/app/upload
-    networks:
-      - ncafe-network
+      - ./upload:/app/upload
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/ncafedb}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    restart: unless-stopped
+    depends_on:
+      - db
 
   frontend:
+    image: ${FRONTEND_IMAGE:-ncafe-frontend:latest}
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: yj-ncafe-frontend
-    restart: unless-stopped
+    container_name: yj-dev-frontend
     ports:
-      - "${FRONTEND_PORT}:${INTERNAL_FRONTEND_PORT}"
+      - "3065:3001"
     environment:
-      # Use service name 'backend' for internal communication
-      NEXT_PUBLIC_API_URL: http://backend:${INTERNAL_BACKEND_PORT}
+      - API_BASE_URL=http://backend:8081
+      - SESSION_SECRET=${SESSION_SECRET:-ea78b9775aeded53fdf6ae11a3219db6}
     depends_on:
       - backend
-    networks:
-      - ncafe-network
+    restart: unless-stopped
 
-volumes:
-  postgres_data:
-
-networks:
-  ncafe-network:
-    driver: bridge
+  db:
+    image: postgres:17
+    profiles: [ "with-db" ]
+    container_name: yj-dev-db
+    environment:
+      POSTGRES_DB: ncafedb
+      POSTGRES_USER: ncafe
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    restart: unless-stopped

@@ -53,12 +53,12 @@ export default function AdminSidebar() {
     return (
         <aside className={styles.sidebar}>
             {/* Logo */}
-            <div className={styles.logo}>
+            <Link href="/order" className={styles.logo} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div className={styles.logoText}>
                     <span className={styles.logoIcon}>☕</span>
                     NCafe Admin
                 </div>
-            </div>
+            </Link>
 
             {/* Navigation */}
             <nav className={styles.nav}>

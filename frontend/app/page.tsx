@@ -21,9 +21,10 @@ export default function Home() {
       {/* ── Navbar ──────────────────────── */}
       <nav className={styles.nav}>
         <div className={styles.navInner}>
-          <span className={styles.navLogo}>NCAFE</span>
+          <Link href="/order" className={styles.navLogo}>NCAFE</Link>
           <div className={styles.navLinks}>
             <Link href="/order">MENU</Link>
+            <Link href="/login">LOGIN</Link>
             <Link href="/admin">ADMIN</Link>
           </div>
         </div>
