@@ -6,5 +6,6 @@ RUN ./gradlew bootJar
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+# buildDir is set to /tmp/gradle-build in build.gradle
+COPY --from=build /tmp/gradle-build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
