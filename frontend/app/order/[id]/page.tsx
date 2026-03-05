@@ -183,7 +183,7 @@ export default function MenuDetailPage() {
                 src={
                   images[currentImageIndex].url.startsWith("http")
                     ? images[currentImageIndex].url
-                    : `/images/${images[currentImageIndex].url}`
+                    : `/api/images/${images[currentImageIndex].url}`
                 }
                 alt={menu.korName}
               />
@@ -216,7 +216,7 @@ export default function MenuDetailPage() {
               )}
             </>
           ) : menu.imageSrc ? (
-            <img src={`/images/${menu.imageSrc}`} alt={menu.korName} />
+            <img src={`/api/images/${menu.imageSrc}`} alt={menu.korName} />
           ) : (
             <div className={styles.heroPlaceholder}>
               <Coffee size={64} />
@@ -299,7 +299,7 @@ export default function MenuDetailPage() {
                   <div className={styles.relatedImage}>
                     {item.imageSrc ? (
                       <img
-                        src={`/images/${item.imageSrc}`}
+                        src={`/api/images/${item.imageSrc}`}
                         alt={item.korName}
                       />
                     ) : (

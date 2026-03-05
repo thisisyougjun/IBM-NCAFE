@@ -18,7 +18,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
             // /api/v1/admin/menus
             // /api/v1/images/1.jpg
             <Image
-              src={`/images/${menu.imageSrc}`}
+              src={`/api/images/${menu.imageSrc}`}
               alt={menu.korName}
               fill
               className={styles.image}

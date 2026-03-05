@@ -274,7 +274,7 @@ function MenuCard({ menu }: { menu: MenuItem }) {
       >
         <div className={styles.cardImage}>
           {menu.imageSrc ? (
-            <img src={`/images/${menu.imageSrc}`} alt={menu.korName} />
+            <img src={`/api/images/${menu.imageSrc}`} alt={menu.korName} />
           ) : (
             <div className={styles.cardPlaceholder}>
               <Coffee size={32} />
