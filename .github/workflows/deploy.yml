@@ -24,6 +24,9 @@ jobs:
           echo "JWT_SECRET=${JWT_SECRET}" >> .env
           echo "ADMIN_USERNAME=${ADMIN_USERNAME}" >> .env
           echo "ADMIN_PASSWORD=${ADMIN_PASSWORD}" >> .env
+
+          echo "FRONTEND_IMAGE=yj-ncafe-frontend:latest" >> .env
+          echo "BACKEND_IMAGE=yj-ncafe-backend:latest" >> .env
         env:
           COMPOSE_PROJECT_NAME: ${{ secrets.COMPOSE_PROJECT_NAME }}
           USER_ID: ${{ secrets.USER_ID }}
