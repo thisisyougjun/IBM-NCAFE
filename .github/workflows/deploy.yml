@@ -43,6 +43,11 @@ jobs:
           ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
 
+      - name: Clean up existing containers
+        run: |
+          docker rm -f yj-dev-db yj-dev-frontend yj-dev-backend || true
+          docker compose --profile with-db down || true
+
       - name: Build and Deploy
         run: docker compose --profile with-db up --build -d
 
