@@ -5,10 +5,17 @@ export const metadata: Metadata = {
   description: "IBM NCAFE - 신선한 커피와 디저트를 만나보세요",
 };
 
+import ChatbotWidget from "@/components/ChatbotWidget/ChatbotWidget";
+
 export default function OrderLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <ChatbotWidget />
+    </>
+  );
 }
