@@ -15,6 +15,13 @@ public class WebConfig implements WebMvcConfigurer {
     private String[] allowedOrigins;
 
     @Override
+    public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+        // 클라이언트가 /images/** 로 요청하면, 서버의 ./upload/ 디렉토리에서 파일을 찾도록 설정
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:./upload/");
+    }
+
+    @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*")   // BFF 서버→서버 통신이므로 전체 허용

@@ -11,7 +11,7 @@ jobs:
     steps:
 
       - name: Clean up root owned files
-        run: docker run --rm -v ${{ github.workspace }}:/workspace alpine sh -c "rm -rf /workspace/data /workspace/upload" || true
+        run: docker run --rm -v ${{ github.workspace }}:/workspace alpine sh -c "rm -rf /workspace/data" || true
     
       - name: Checkout
         uses: actions/checkout@v4
