@@ -31,6 +31,8 @@ jobs:
 
           echo "FRONTEND_IMAGE=yj-ncafe-frontend:latest" >> .env
           echo "BACKEND_IMAGE=yj-ncafe-backend:latest" >> .env
+          echo "AGENT_IMAGE=yj-ncafe-agent:latest" >> .env
+          echo "GEMINI_API_KEY=${GEMINI_API_KEY}" >> .env
         env:
           COMPOSE_PROJECT_NAME: ${{ secrets.COMPOSE_PROJECT_NAME }}
           USER_ID: ${{ secrets.USER_ID }}
@@ -42,6 +44,7 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Clean up existing containers
         run: |

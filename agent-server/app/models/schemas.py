@@ -1,0 +1,12 @@
+from typing import Any
+from pydantic import BaseModel
+
+
+class Message(BaseModel):
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    messages: list[Message]
+    stream: bool = True

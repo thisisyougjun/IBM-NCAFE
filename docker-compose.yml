@@ -30,9 +30,23 @@ services:
       - "3065:3001"
     environment:
       - API_BASE_URL=http://backend:8081
+      - AGENT_BASE_URL=http://agent-server:8000
       - SESSION_SECRET=${SESSION_SECRET:-ea78b9775aeded53fdf6ae11a3219db6}
     depends_on:
       - backend
+      - agent-server
+    restart: unless-stopped
+
+  agent-server:
+    image: ${AGENT_IMAGE:-ncafe-agent:latest}
+    build:
+      context: ./agent-server
+      dockerfile: Dockerfile
+    container_name: yj-dev-agent
+    ports:
+      - "${AGENT_PORT:-8165}:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     restart: unless-stopped
 
   db:
