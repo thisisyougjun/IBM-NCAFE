@@ -47,6 +47,7 @@ services:
       - "${AGENT_PORT:-8165}:8000"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - BACKEND_BASE_URL=http://backend:8081
     restart: unless-stopped
 
   db:
