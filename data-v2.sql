@@ -130,24 +130,57 @@ WHERE NOT EXISTS (SELECT 1 FROM menus WHERE kor_name = '페퍼민트');
 
 -- Insert menu images
 
-INSERT INTO menu_images (menu_id, src_url, is_primary, display_order) VALUES 
-(1, '/images/americano.png', true, 1),
-(2, '/images/cafelatte.png', true, 1),
-(3, '/images/capuchino.png', true, 1),
-(4, '/images/espresso.png', true, 1),
-(5, '/images/caramel-macchiato.png', true, 1),
-(6, '/images/americano1.png', true, 1),
-(7, '/images/chocolate-mousse.png', true, 1),
-(8, '/images/bananalatte.png', true, 1),
-(9, '/images/blank.png', true, 1),
-(10, '/images/chocolate-mousse.png', true, 1),
-(11, '/images/chocolate-croissant.png', true, 1),
-(12, '/images/strawberry-cake.png', true, 1),
-(13, '/images/signature.png', true, 1),
-(14, '/images/signature1.png', true, 1),
-(15, '/images/blank.png', true, 1),
-(16, '/images/blank.png', true, 1),
-(17, '/images/blank.png', true, 1);
+-- Insert menu images
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/americano.png', true, 1 FROM menus WHERE kor_name = '아메리카노' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/cafelatte.png', true, 1 FROM menus WHERE kor_name = '카페라떼' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/capuchino.png', true, 1 FROM menus WHERE kor_name = '카푸치노' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/espresso.png', true, 1 FROM menus WHERE kor_name = '에스프레소' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/caramel-macchiato.png', true, 1 FROM menus WHERE kor_name = '카라멜 마키아또' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/americano1.png', true, 1 FROM menus WHERE kor_name = '콜드브루' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/chocolate-mousse.png', true, 1 FROM menus WHERE kor_name = '초코라떼' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/bananalatte.png', true, 1 FROM menus WHERE kor_name = '고구마 라떼' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/blank.png', true, 1 FROM menus WHERE kor_name = '딸기 라떼' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/chocolate-mousse.png', true, 1 FROM menus WHERE kor_name = '티라미수 케이크' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/chocolate-croissant.png', true, 1 FROM menus WHERE kor_name = '크로와상' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/strawberry-cake.png', true, 1 FROM menus WHERE kor_name = '치즈케이크' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/signature.png', true, 1 FROM menus WHERE kor_name = '망고 스무디' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/signature1.png', true, 1 FROM menus WHERE kor_name = '오렌지 주스' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/blank.png', true, 1 FROM menus WHERE kor_name = '얼그레이' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/blank.png', true, 1 FROM menus WHERE kor_name = '캐모마일' LIMIT 1;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order)
+SELECT id, '/images/blank.png', true, 1 FROM menus WHERE kor_name = '페퍼민트' LIMIT 1;
 
 
 -- =============================================
