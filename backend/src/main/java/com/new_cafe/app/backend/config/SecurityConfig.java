@@ -36,8 +36,10 @@ public class SecurityConfig {
                     .requestMatchers("/auth/**").permitAll()            // 로그인/회원가입/refresh/logout
                     .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/menu/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/admin/categories/**").permitAll()
+                    .requestMatchers("/images/**").permitAll()
                     .requestMatchers("/error").permitAll()
+
+                    .requestMatchers(HttpMethod.GET, "/admin/categories/**").permitAll()
 
                     // ── 관리자 전용 엔드포인트 ─────────────────────────────────────
                     .requestMatchers("/admin/**").hasRole("ADMIN")

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu } from "@/types";
+import { resolvePublicImageSrc } from "@/app/lib/publicFetch";
 
 export function useMenuDetail(id: string) {
   const [menu, setMenu] = useState<Menu | undefined>(undefined);
@@ -72,9 +73,7 @@ export function useMenuDetail(id: string) {
                 ? [
                     {
                       id: "1",
-                      url: menuDataRes.imageSrc.startsWith("http")
-                        ? menuDataRes.imageSrc
-                        : `/api${menuDataRes.imageSrc}`,
+                      url: resolvePublicImageSrc(menuDataRes.imageSrc) || "",
                       isPrimary: true,
                       sortOrder: 0,
                     },
