@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { useTheme } from "@/app/_components/ThemeProvider";
+import { useCart } from "@/app/_components/CartProvider";
 import { authAPI } from "@/app/lib/api";
 import {
   Coffee,
@@ -17,6 +18,10 @@ import {
   Moon,
   User,
   LogOut,
+  ShoppingCart,
+  Plus,
+  Minus,
+  X,
 } from "lucide-react";
 
 /* ── 타입 정의 ───────────────────────────── */
@@ -50,12 +55,14 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 export default function OrderPage() {
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const { items, getTotalPrice, getTotalItems } = useCart();
   const [menus, setMenus] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // BFF 세션 기반 로그인 상태 확인
   useEffect(() => {
@@ -162,6 +169,18 @@ export default function OrderPage() {
               </span>
             </button>
 
+            {/* 장바구니 아이콘 */}
+            <button
+              className={styles.cartButton}
+              onClick={() => setIsCartOpen(!isCartOpen)}
+              aria-label="장바구니"
+            >
+              <ShoppingCart size={20} />
+              {getTotalItems() > 0 && (
+                <span className={styles.cartBadge}>{getTotalItems()}</span>
+              )}
+            </button>
+
             {userName ? (
               <div className={styles.userArea}>
                 <User size={16} />
@@ -182,6 +201,13 @@ export default function OrderPage() {
           </div>
         </div>
       </header>
+
+      {/* ── 장바구니 드롭다운 ─────────────── */}
+      {isCartOpen && (
+        <div className={styles.cartDropdown}>
+          <CartDropdown onClose={() => setIsCartOpen(false)} />
+        </div>
+      )}
 
       {/* ── 검색 & 카테고리 ─────────────── */}
       <div className={styles.controls}>
@@ -264,14 +290,32 @@ export default function OrderPage() {
 /* ── 메뉴 카드 컴포넌트 ──────────────────── */
 function MenuCard({ menu }: { menu: MenuItem }) {
   const [isHovered, setIsHovered] = useState(false);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!menu.isSoldOut) {
+      addToCart({
+        menuId: menu.id,
+        korName: menu.korName,
+        engName: menu.engName,
+        price: menu.price,
+        imageSrc: menu.imageSrc,
+        categoryName: menu.categoryName,
+      });
+    }
+  };
 
   return (
-    <Link href={`/order/${menu.id}`} className={styles.cardLink}>
-      <article
-        className={`${styles.card} ${menu.isSoldOut ? styles.cardSoldOut : ""}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+    <div className={styles.cardWrapper}>
+      <Link href={`/order/${menu.id}`} className={styles.cardLink}>
+        <article
+          className={`${styles.card} ${menu.isSoldOut ? styles.cardSoldOut : ""}`}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
         <div className={styles.cardImage}>
           {menu.imageSrc ? (
             <img src={`/api/images/${menu.imageSrc}`} alt={menu.korName} />
@@ -307,5 +351,105 @@ function MenuCard({ menu }: { menu: MenuItem }) {
         </div>
       </article>
     </Link>
+    <button
+      className={`${styles.addToCartBtn} ${menu.isSoldOut ? styles.disabled : ""}`}
+      onClick={handleAddToCart}
+      disabled={menu.isSoldOut}
+      aria-label="장바구니에 담기"
+    >
+      <Plus size={16} />
+      담기
+    </button>
+  </div>
+  );
+}
+
+/* ── 장바구니 드롭다운 컴포넌트 ───────────── */
+function CartDropdown({ onClose }: { onClose: () => void }) {
+  const { items, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
+
+  return (
+    <>
+      <div className={styles.cartOverlay} onClick={onClose} />
+      <div className={styles.cartPanel}>
+        <div className={styles.cartHeader}>
+          <h3>
+            <ShoppingCart size={20} />
+            장바구니
+          </h3>
+          <button className={styles.cartCloseBtn} onClick={onClose} aria-label="닫기">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className={styles.cartBody}>
+          {items.length === 0 ? (
+            <div className={styles.cartEmpty}>
+              <ShoppingCart size={48} />
+              <p>장바구니가 비어있습니다</p>
+            </div>
+          ) : (
+            <>
+              {items.map((item) => (
+                <div key={item.menuId} className={styles.cartItem}>
+                  <div className={styles.cartItemImage}>
+                    {item.imageSrc ? (
+                      <img src={`/api/images/${item.imageSrc}`} alt={item.korName} />
+                    ) : (
+                      <Coffee size={24} />
+                    )}
+                  </div>
+                  <div className={styles.cartItemInfo}>
+                    <h4>{item.korName}</h4>
+                    <p className={styles.cartItemPrice}>
+                      {item.price.toLocaleString()}원
+                    </p>
+                  </div>
+                  <div className={styles.cartItemActions}>
+                    <button
+                      onClick={() => updateQuantity(item.menuId, item.quantity - 1)}
+                      aria-label="수량 감소"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item.menuId, item.quantity + 1)}
+                      aria-label="수량 증가"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                  <button
+                    className={styles.cartItemRemove}
+                    onClick={() => removeFromCart(item.menuId)}
+                    aria-label="삭제"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+
+        {items.length > 0 && (
+          <div className={styles.cartFooter}>
+            <div className={styles.cartTotal}>
+              <span>총 금액</span>
+              <span className={styles.cartTotalPrice}>
+                {getTotalPrice().toLocaleString()}원
+              </span>
+            </div>
+            <button className={styles.cartClearBtn} onClick={clearCart}>
+              전체 삭제
+            </button>
+            <button className={styles.cartCheckoutBtn}>
+              주문하기
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
