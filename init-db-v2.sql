@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     role VARCHAR(20) NOT NULL DEFAULT 'USER',
@@ -63,14 +63,14 @@ CREATE INDEX IF NOT EXISTS idx_categories_display_order ON categories(display_or
 CREATE INDEX IF NOT EXISTS idx_categories_is_active ON categories(is_active);
 
 -- menus 테이블 개선
--- price -> base_price 컬럼명 변경 (이미 변경되었으면 무시)
+-- price 컬럼을 그대로 유지합니다 (백엔드 엔티티와 일치)
 DO $$
 BEGIN
-    IF EXISTS (
+    IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
         WHERE table_name = 'menus' AND column_name = 'price'
     ) THEN
-        ALTER TABLE menus RENAME COLUMN price TO base_price;
+        ALTER TABLE menus ADD COLUMN price INTEGER;
     END IF;
 END $$;
 
