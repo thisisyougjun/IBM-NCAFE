@@ -11,6 +11,7 @@ from typing import Generator
 from google import genai
 from google.genai import types
 from app.config import GEMINI_API_KEY, BACKEND_BASE_URL
+from app.services.rag_service import rag_service
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 MODEL = "gemini-2.5-flash"
@@ -25,7 +26,8 @@ SYSTEM_INSTRUCTION = """당신은 NCafe(엔카페)의 AI 바리스타 어시스�
 
 ## 도구 사용 규칙
 - 메뉴, 가격, 재고, 추천 관련 질문에는 반드시 제공된 도구를 먼저 호출해 최신 정보를 확인하세요.
-- 도구 결과를 바탕으로 정확한 정보를 제공하세요. 없는 메뉴를 지어내지 마세요.
+- 매장 영업시간, 이용 수칙, 할인(텀블러 할인 등), 애견 동반, 환불 규정 등 카페 운영과 관련된 질문을 받으면 반드시 'search_documents' 도구를 사용하여 관련 지식을 먼저 검색하세요.
+- 도구 결과를 바탕으로 정확한 정보를 제공하세요. 없는 정보나 메뉴를 지어내지 마세요.
 
 ## 응답 스타일
 - 친절하고 따뜻한 바리스타 톤으로 답변합니다.
@@ -67,6 +69,20 @@ menu_tools = types.Tool(
                     ),
                 },
                 required=["menu_id"],
+            ),
+        ),
+        types.FunctionDeclaration(
+            name="search_documents",
+            description="카페 매뉴얼, 이용 시간, 와이파이, 주차, 애견 동반, 이벤트, 쿠폰, 알레르기, 환불 처리 등 카페 매장 운영/이용과 관련된 지식 문서를 검색합니다. 고객 질문에 매장 규정 등 정보가 필요하면 가장 먼저 사용하세요.",
+            parameters=types.Schema(
+                type=types.Type.OBJECT,
+                properties={
+                    "query": types.Schema(
+                        type=types.Type.STRING,
+                        description="검색할 질문이나 키워드 (예: '애견 동반', '텀블러 할인')",
+                    ),
+                },
+                required=["query"],
             ),
         ),
     ]
@@ -114,6 +130,16 @@ def _dispatch_tool_call(tool_name: str, tool_args: dict) -> str:
         )
     elif tool_name == "get_menu_detail":
         result = _call_get_menu_detail(menu_id=tool_args["menu_id"])
+    elif tool_name == "search_documents":
+        try:
+            results = rag_service.search_documents(tool_args["query"], top_k=3)
+            # vector(1024) 등 직렬화 불가능한 필드는 제거하고 텍스트만 유지
+            cleaned_results = [
+                {"title": r.get("title"), "content": r.get("content")} for r in results
+            ]
+            result = {"results": cleaned_results}
+        except Exception as e:
+            result = {"error": f"문서 검색 실패: {str(e)}"}
     else:
         result = {"error": f"알 수 없는 도구: {tool_name}"}
 

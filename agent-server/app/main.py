@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import chat
+from app.routers import chat, rag
 
 app = FastAPI(title="AI Chat Server")
 
@@ -13,6 +13,7 @@ app.add_middleware(
 )
 
 app.include_router(chat.router)
+app.include_router(rag.router)
 
 
 @app.get("/health")

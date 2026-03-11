@@ -9,7 +9,8 @@ import {
     Settings,
     Users,
     BarChart3,
-    Package
+    Package,
+    BookText
 } from 'lucide-react';
 import styles from './AdminSidebar.module.css';
 
@@ -30,6 +31,12 @@ const navItems = [
         section: '주문 관리',
         items: [
             { href: '/admin/orders', label: '주문 내역', icon: ShoppingBag },
+        ],
+    },
+    {
+        section: 'AI 관리',
+        items: [
+            { href: '/admin/rag', label: 'RAG 문서', icon: BookText },
         ],
     },
     {

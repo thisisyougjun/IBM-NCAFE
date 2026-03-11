@@ -48,10 +48,17 @@ services:
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - BACKEND_BASE_URL=http://backend:8081
+      - POSTGRES_DB=ncafedb
+      - POSTGRES_USER=ncafe
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
     restart: unless-stopped
 
   db:
-    image: postgres:17
+    image: pgvector/pgvector:pg17
     profiles: [ "with-db" ]
     container_name: yj-dev-db
     environment:
@@ -62,6 +69,7 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     restart: unless-stopped
 
 volumes:

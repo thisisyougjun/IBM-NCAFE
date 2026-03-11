@@ -1,0 +1,19 @@
+services:
+  backend:
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - AGENT_BASE_URL=http://agent-server:8000
+    ports:
+      - "${BACKEND_PORT:-8065}:8081"
+
+  frontend:
+    ports:
+      - "${FRONTEND_PORT:-3065}:3001"
+
+  agent-server:
+    ports:
+      - "${AGENT_PORT:-8165}:8000"
+
+  db:
+    ports:
+      - "${DB_PORT:-5433}:5432"

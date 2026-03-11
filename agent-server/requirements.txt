@@ -4,3 +4,7 @@ google-genai
 python-dotenv
 sse-starlette
 httpx
+sentence-transformers
+psycopg2-binary
+numpy
+python-multipart
