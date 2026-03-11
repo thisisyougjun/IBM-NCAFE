@@ -3,6 +3,8 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=dev
       - AGENT_BASE_URL=http://agent-server:8000
+      - SPRING_SECURITY_DEBUG=true
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=DEBUG
     ports:
       - "${BACKEND_PORT:-8065}:8081"
 

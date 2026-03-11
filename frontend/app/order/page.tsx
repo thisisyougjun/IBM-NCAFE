@@ -7,6 +7,7 @@ import styles from "./page.module.css";
 import { useTheme } from "@/app/_components/ThemeProvider";
 import { useCart } from "@/app/_components/CartProvider";
 import { authAPI } from "@/app/lib/api";
+import { fetchPublic, resolvePublicImageSrc } from "@/app/lib/publicFetch";
 import {
   Coffee,
   IceCreamCone,
@@ -93,8 +94,8 @@ export default function OrderPage() {
       try {
         setIsLoading(true);
         const [menuRes, catRes] = await Promise.all([
-          fetch("/api/menu"),
-          fetch("/api/admin/categories"),
+          fetchPublic("/menu"),
+          fetchPublic("/admin/categories"),
         ]);
 
         if (menuRes.ok) {
@@ -316,13 +317,13 @@ function MenuCard({ menu }: { menu: MenuItem }) {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-        <div className={styles.cardImage}>
-          {menu.imageSrc ? (
-            <img src={`/api/images/${menu.imageSrc}`} alt={menu.korName} />
-          ) : (
-            <div className={styles.cardPlaceholder}>
-              <Coffee size={32} />
-            </div>
+	        <div className={styles.cardImage}>
+	          {menu.imageSrc ? (
+	            <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
+	          ) : (
+	            <div className={styles.cardPlaceholder}>
+	              <Coffee size={32} />
+	            </div>
           )}
           {menu.isSoldOut && (
             <div className={styles.soldOutOverlay}>
@@ -392,13 +393,13 @@ function CartDropdown({ onClose }: { onClose: () => void }) {
             <>
               {items.map((item) => (
                 <div key={item.menuId} className={styles.cartItem}>
-                  <div className={styles.cartItemImage}>
-                    {item.imageSrc ? (
-                      <img src={`/api/images/${item.imageSrc}`} alt={item.korName} />
-                    ) : (
-                      <Coffee size={24} />
-                    )}
-                  </div>
+	                  <div className={styles.cartItemImage}>
+	                    {item.imageSrc ? (
+	                      <img src={resolvePublicImageSrc(item.imageSrc) || ""} alt={item.korName} />
+	                    ) : (
+	                      <Coffee size={24} />
+	                    )}
+	                  </div>
                   <div className={styles.cartItemInfo}>
                     <h4>{item.korName}</h4>
                     <p className={styles.cartItemPrice}>

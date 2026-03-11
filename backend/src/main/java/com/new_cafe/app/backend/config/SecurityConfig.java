@@ -37,7 +37,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/menu/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/admin/categories/**").permitAll()
-                    .requestMatchers("/images/**").permitAll()
+                    .requestMatchers("/error").permitAll()
 
                     // ── 관리자 전용 엔드포인트 ─────────────────────────────────────
                     .requestMatchers("/admin/**").hasRole("ADMIN")

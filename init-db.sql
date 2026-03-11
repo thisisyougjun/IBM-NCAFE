@@ -31,3 +31,4 @@ CREATE TRIGGER update_rag_documents_updated_at
 BEFORE UPDATE ON rag_documents 
 FOR EACH ROW 
 EXECUTE FUNCTION update_updated_at_column();
+

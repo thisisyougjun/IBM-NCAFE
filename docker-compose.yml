@@ -17,6 +17,7 @@ services:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     restart: unless-stopped
+    profiles: ["with-db"]
     depends_on:
       - db
 
@@ -32,9 +33,6 @@ services:
       - API_BASE_URL=http://backend:8081
       - AGENT_BASE_URL=http://agent-server:8000
       - SESSION_SECRET=${SESSION_SECRET:-ea78b9775aeded53fdf6ae11a3219db6}
-    depends_on:
-      - backend
-      - agent-server
     restart: unless-stopped
 
   agent-server:
@@ -53,6 +51,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=db
       - DB_PORT=5432
+    profiles: ["with-db"]
     depends_on:
       - db
     restart: unless-stopped

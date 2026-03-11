@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { useTheme } from "@/app/_components/ThemeProvider";
+import { fetchPublic, resolvePublicImageSrc } from "@/app/lib/publicFetch";
 import {
   Coffee,
   ArrowLeft,
@@ -58,8 +59,8 @@ export default function MenuDetailPage() {
         setIsLoading(true);
 
         const [menuRes, imageRes] = await Promise.all([
-          fetch(`/api/menu/${menuId}`),
-          fetch(`/api/menu/${menuId}/images`),
+          fetchPublic(`/menu/${menuId}`),
+          fetchPublic(`/menu/${menuId}/images`),
         ]);
 
         if (menuRes.ok) {
@@ -67,8 +68,8 @@ export default function MenuDetailPage() {
           setMenu(menuData);
 
           // 같은 카테고리의 다른 메뉴 fetch
-          const relatedRes = await fetch(
-            `/api/menu?categoryId=${menuData.categoryId}`,
+          const relatedRes = await fetchPublic(
+            `/menu?categoryId=${menuData.categoryId}`,
           );
           if (relatedRes.ok) {
             const relatedData = await relatedRes.json();
@@ -180,11 +181,7 @@ export default function MenuDetailPage() {
           {images.length > 0 ? (
             <>
               <img
-                src={
-                  images[currentImageIndex].url.startsWith("http")
-                    ? images[currentImageIndex].url
-                    : `/api/images/${images[currentImageIndex].url}`
-                }
+                src={resolvePublicImageSrc(images[currentImageIndex].url) || ""}
                 alt={menu.korName}
               />
               {images.length > 1 && (
@@ -216,7 +213,7 @@ export default function MenuDetailPage() {
               )}
             </>
           ) : menu.imageSrc ? (
-            <img src={`/api/images/${menu.imageSrc}`} alt={menu.korName} />
+            <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
           ) : (
             <div className={styles.heroPlaceholder}>
               <Coffee size={64} />
@@ -299,7 +296,7 @@ export default function MenuDetailPage() {
                   <div className={styles.relatedImage}>
                     {item.imageSrc ? (
                       <img
-                        src={`/api/images/${item.imageSrc}`}
+                        src={resolvePublicImageSrc(item.imageSrc) || ""}
                         alt={item.korName}
                       />
                     ) : (
