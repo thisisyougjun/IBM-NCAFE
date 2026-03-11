@@ -32,3 +32,25 @@ BEFORE UPDATE ON rag_documents
 FOR EACH ROW 
 EXECUTE FUNCTION update_updated_at_column();
 
+
+-- Insert menu images
+DELETE FROM menu_images;
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order) VALUES 
+(1, '/images/americano.png', true, 1),
+(2, '/images/cafelatte.png', true, 1),
+(3, '/images/capuchino.png', true, 1),
+(4, '/images/espresso.png', true, 1),
+(5, '/images/caramel-macchiato.png', true, 1),
+(6, '/images/americano1.png', true, 1),
+(7, '/images/chocolate-mousse.png', true, 1),
+(8, '/images/bananalatte.png', true, 1),
+(9, '/images/blank.png', true, 1),
+(10, '/images/chocolate-mousse.png', true, 1),
+(11, '/images/chocolate-croissant.png', true, 1),
+(12, '/images/strawberry-cake.png', true, 1),
+(13, '/images/signature.png', true, 1),
+(14, '/images/signature1.png', true, 1),
+(15, '/images/blank.png', true, 1),
+(16, '/images/blank.png', true, 1),
+(17, '/images/blank.png', true, 1);
