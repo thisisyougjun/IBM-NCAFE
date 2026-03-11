@@ -23,6 +23,22 @@ fi
 echo "✅ DB 컨테이너 실행 중"
 echo ""
 
+# 1.1 DB 서비스 준비 상태 확인 (Wait for DB to start)
+echo "[1.1/4] DB 서비스 준비 대기 중..."
+MAX_RETRIES=30
+RETRY_COUNT=0
+while ! docker exec yj-dev-db pg_isready -U ncafe -d ncafedb > /dev/null 2>&1; do
+    RETRY_COUNT=$((RETRY_COUNT+1))
+    if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+        echo "❌ 오류: DB 서비스가 준비되지 않았습니다. (타임아웃)"
+        exit 1
+    fi
+    echo "대기 중... ($RETRY_COUNT/$MAX_RETRIES)"
+    sleep 2
+done
+echo "✅ DB 서비스 준비 완료"
+echo ""
+
 # 2. 백업 생성
 echo "[2/4] 현재 DB 백업 생성 중..."
 BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).sql"
