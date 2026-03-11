@@ -248,7 +248,7 @@ export default function MenuDetailPage() {
           {/* 가격 */}
           <div className={styles.priceBox}>
             <span className={styles.price}>
-              {menu.price.toLocaleString()}
+              {(menu.price ?? 0).toLocaleString()}
               <small>원</small>
             </span>
           </div>
@@ -310,7 +310,7 @@ export default function MenuDetailPage() {
                   </div>
                   <div className={styles.relatedInfo}>
                     <h3>{item.korName}</h3>
-                    <p>{item.price.toLocaleString()}원</p>
+                    <p>{(item.price ?? 0).toLocaleString()}원</p>
                   </div>
                 </Link>
               ))}

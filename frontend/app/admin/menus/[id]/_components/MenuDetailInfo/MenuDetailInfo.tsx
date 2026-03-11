@@ -29,7 +29,7 @@ export default function MenuDetailInfo({ menu }: MenuDetailInfoProps) {
 
             <div className={styles.row}>
                 <span className={styles.label}>가격</span>
-                <span className={styles.value}>{menu.price.toLocaleString()}원</span>
+                <span className={styles.value}>{(menu.price ?? 0).toLocaleString()}원</span>
             </div>
 
             <div className={styles.row}>

@@ -41,7 +41,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
           <Link href={`/admin/menus/${menu.id}`} className={styles.nameLink}>
             <h3 className={styles.name}>{menu.korName}</h3>
           </Link>
-          <span className={styles.price}>{menu.price.toLocaleString()}원</span>
+          <span className={styles.price}>{(menu.price ?? 0).toLocaleString()}원</span>
         </div>
         <p className={styles.engName}>{menu.engName}</p>
 

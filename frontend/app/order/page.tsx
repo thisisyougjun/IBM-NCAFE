@@ -344,7 +344,7 @@ function MenuCard({ menu }: { menu: MenuItem }) {
           <p className={styles.cardEngName}>{menu.engName}</p>
           <div className={styles.cardFooter}>
             <span className={styles.cardPrice}>
-              {menu.price.toLocaleString()}
+              {(menu.price ?? 0).toLocaleString()}
               <small>원</small>
             </span>
           </div>
@@ -402,7 +402,7 @@ function CartDropdown({ onClose }: { onClose: () => void }) {
                   <div className={styles.cartItemInfo}>
                     <h4>{item.korName}</h4>
                     <p className={styles.cartItemPrice}>
-                      {item.price.toLocaleString()}원
+                      {(item.price ?? 0).toLocaleString()}원
                     </p>
                   </div>
                   <div className={styles.cartItemActions}>
@@ -438,7 +438,7 @@ function CartDropdown({ onClose }: { onClose: () => void }) {
             <div className={styles.cartTotal}>
               <span>총 금액</span>
               <span className={styles.cartTotalPrice}>
-                {getTotalPrice().toLocaleString()}원
+                {(getTotalPrice() ?? 0).toLocaleString()}원
               </span>
             </div>
             <button className={styles.cartClearBtn} onClick={clearCart}>

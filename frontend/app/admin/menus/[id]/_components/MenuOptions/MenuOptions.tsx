@@ -47,7 +47,7 @@ export default function MenuOptions({ options }: MenuOptionsProps) {
                             <div key={item.id} className={styles.optionItem}>
                                 <span>{item.name}</span>
                                 <span className={styles.optionPrice}>
-                                    {item.priceDelta > 0 ? `+${item.priceDelta.toLocaleString()}원` : '무료'}
+                                    {item.priceDelta > 0 ? `+${(item.priceDelta ?? 0).toLocaleString()}원` : '무료'}
                                 </span>
                             </div>
                         ))}
