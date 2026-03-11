@@ -13,6 +13,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/images/:path*',
+        destination: `${process.env.API_BASE_URL || 'http://backend:8081'}/images/:path*`,
+      },
+      {
+        source: '/api/images/:path*',
+        destination: `${process.env.API_BASE_URL || 'http://backend:8081'}/images/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

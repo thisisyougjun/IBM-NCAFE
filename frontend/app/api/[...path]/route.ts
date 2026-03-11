@@ -19,11 +19,16 @@ const API_BASE = process.env.API_BASE_URL || 'http://localhost:8081';
 async function proxyRequest(req: NextRequest): Promise<NextResponse> {
   const session = await getSession();
   let path = req.nextUrl.pathname;   // 예: /api/menu
+  if (path.startsWith("/api/images")) {
+    // skip direct proxying for images if handled by next.config rewrites fallback
+    // but for now, we keep BFF proxy logic consistent.
+  }
   if (path.startsWith("/api")) {
     path = path.slice(4); // "/api" 제거 -> "/menu"
   }
   const search = req.nextUrl.search;   // 예: ?page=0&size=10
   const targetUrl = `${API_BASE}${path}${search}`;
+  console.log(`[BFF Proxy] Path: ${path}, Target: ${targetUrl}`);
 
   // 요청 헤더 구성
   const headers: Record<string, string> = {};

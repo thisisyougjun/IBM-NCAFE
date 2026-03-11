@@ -40,13 +40,9 @@ export function resolvePublicImageSrc(src?: string | null) {
     return `${BACKEND_BASE}/images/${trimmed}`;
   }
 
-  // Otherwise, route through BFF. Backend serves static files under /images/**.
-  // Stored values can be either:
-  // - "/images/menu/americano.jpg"  -> /api/images/menu/americano.jpg
-  // - "menu/americano.jpg"         -> /api/images/menu/americano.jpg
-  // - "images/menu/americano.jpg"  -> /api/images/menu/americano.jpg
+  // Otherwise, use clean /images/ path. Next.js rewrites will handle proxying to backend.
   if (trimmed.startsWith("images/")) {
-    return `/api/${trimmed}`;
+    return `/${trimmed}`;
   }
-  return `/api/images/${trimmed}`;
+  return `/images/${trimmed}`;
 }
