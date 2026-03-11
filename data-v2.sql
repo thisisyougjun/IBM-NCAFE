@@ -128,6 +128,28 @@ SELECT '페퍼민트', 'Peppermint', '상쾌한 민트향으로 기분 전환에
        (SELECT id FROM categories WHERE name = '티' LIMIT 1), true, false, 3, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM menus WHERE kor_name = '페퍼민트');
 
+-- Insert menu images
+
+INSERT INTO menu_images (menu_id, src_url, is_primary, display_order) VALUES 
+(1, '/images/americano.png', true, 1),
+(2, '/images/cafelatte.png', true, 1),
+(3, '/images/capuchino.png', true, 1),
+(4, '/images/espresso.png', true, 1),
+(5, '/images/caramel-macchiato.png', true, 1),
+(6, '/images/americano1.png', true, 1),
+(7, '/images/chocolate-mousse.png', true, 1),
+(8, '/images/bananalatte.png', true, 1),
+(9, '/images/blank.png', true, 1),
+(10, '/images/chocolate-mousse.png', true, 1),
+(11, '/images/chocolate-croissant.png', true, 1),
+(12, '/images/strawberry-cake.png', true, 1),
+(13, '/images/signature.png', true, 1),
+(14, '/images/signature1.png', true, 1),
+(15, '/images/blank.png', true, 1),
+(16, '/images/blank.png', true, 1),
+(17, '/images/blank.png', true, 1);
+
+
 -- =============================================
 -- 3. 메뉴 옵션 데이터 (샘플)
 -- =============================================
