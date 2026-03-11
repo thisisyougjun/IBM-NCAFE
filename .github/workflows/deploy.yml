@@ -54,6 +54,11 @@ jobs:
       - name: Build and Deploy
         run: docker compose --profile with-db up --build -d
 
+      - name: DB Migration
+        run: |
+          chmod +x apply-db-migration.sh
+          ./apply-db-migration.sh
+
       - name: Verify deployment
         run: |
           echo "=== Container Status ==="
