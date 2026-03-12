@@ -137,15 +137,19 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("message", "아이디 또는 비밀번호가 올바르지 않습니다."));
         }
 
-        String accessToken  = jwtUtil.generateToken(user.getUsername(), "USER");
-        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "USER");
+        // DB 권한 확인 (ROLE_ADMIN이 있으면 ADMIN, 아니면 USER)
+        String role = user.getRoles().stream()
+                .anyMatch(r -> "ROLE_ADMIN".equals(r.getName())) ? "ADMIN" : "USER";
+
+        String accessToken  = jwtUtil.generateToken(user.getUsername(), role);
+        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), role);
         setRefreshCookie(response, refreshToken);
 
         return ResponseEntity.ok(Map.of(
                 "token", accessToken,
                 "name",  user.getName(),
                 "username", user.getUsername(),
-                "role",  "USER"
+                "role",  role
         ));
     }
 
