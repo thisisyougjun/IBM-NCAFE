@@ -3,11 +3,11 @@ FROM gradle:8-jdk21-alpine AS build
 WORKDIR /app
 COPY . .
 RUN set -eux; \
-    for i in 1 2 3 4 5; do \
+    for i in 1 2 3 4 5 6 7 8; do \
       gradle --no-daemon bootJar -x test && break; \
-      if [ "$i" -eq 5 ]; then exit 1; fi; \
+      if [ "$i" -eq 8 ]; then exit 1; fi; \
       echo "Gradle dependency download failed (attempt $i). Retrying..."; \
-      sleep 10; \
+      sleep 15; \
     done
 
 # Run stage
