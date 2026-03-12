@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
-import { useTheme } from "@/app/_components/ThemeProvider";
-import { useCart } from "@/app/_components/CartProvider";
+import { getCartItemOptionsKey, useCart } from "@/app/_components/CartProvider";
 import { authAPI } from "@/app/lib/api";
 import { fetchPublic, resolvePublicImageSrc } from "@/app/lib/publicFetch";
 import {
@@ -54,7 +53,6 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function OrderPage() {
-  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const { items, getTotalPrice, getTotalItems } = useCart();
   const [menus, setMenus] = useState<MenuItem[]>([]);
@@ -140,35 +138,17 @@ export default function OrderPage() {
       }, {});
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} fade-in`}>
       {/* ── 헤더 ─────────────────────────── */}
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Link href="/order" className={styles.logo}>
-            <Coffee size={28} />
             <span>NCAFE</span>
           </Link>
           <div className={styles.headerRight}>
             <p className={styles.headerTagline}>
-              신선한 원두로 내리는 한 잔의 여유
+              ESSENTIAL COFFEE ROASTERS
             </p>
-            <button
-              className={styles.themeToggle}
-              onClick={toggleTheme}
-              aria-label={
-                theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"
-              }
-            >
-              <span className={styles.themeToggleTrack}>
-                <Sun size={14} className={styles.sunIcon} />
-                <Moon size={14} className={styles.moonIcon} />
-                <span
-                  className={`${styles.themeToggleThumb} ${
-                    theme === "dark" ? styles.themeToggleThumbDark : ""
-                  }`}
-                />
-              </span>
-            </button>
 
             {/* 장바구니 아이콘 */}
             <button
@@ -176,7 +156,7 @@ export default function OrderPage() {
               onClick={() => setIsCartOpen(!isCartOpen)}
               aria-label="장바구니"
             >
-              <ShoppingCart size={20} />
+              CART
               {getTotalItems() > 0 && (
                 <span className={styles.cartBadge}>{getTotalItems()}</span>
               )}
@@ -184,19 +164,17 @@ export default function OrderPage() {
 
             {userName ? (
               <div className={styles.userArea}>
-                <User size={16} />
-                <span className={styles.userName}>{userName}님</span>
+                <span className={styles.userName}>{userName}</span>
                 <button
                   className={styles.logoutBtn}
                   onClick={handleLogout}
-                  aria-label="로그아웃"
                 >
-                  <LogOut size={16} />
+                  LOGOUT
                 </button>
               </div>
             ) : (
               <Link href="/login" className={styles.loginBtn}>
-                로그인
+                LOGIN
               </Link>
             )}
           </div>
@@ -213,11 +191,11 @@ export default function OrderPage() {
       {/* ── 검색 & 카테고리 ─────────────── */}
       <div className={styles.controls}>
         <div className={styles.searchBox}>
-          <Search size={18} className={styles.searchIcon} />
+          <Search size={16} className={styles.searchIcon} />
           <input
             type="text"
             className={styles.searchInput}
-            placeholder="메뉴 검색..."
+            placeholder="SEARCH MENU"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -230,7 +208,7 @@ export default function OrderPage() {
             }`}
             onClick={() => setSelectedCategory(null)}
           >
-            전체
+            ALL
           </button>
           {categories.map((cat) => (
             <button
@@ -242,7 +220,6 @@ export default function OrderPage() {
                 setSelectedCategory(selectedCategory === cat.id ? null : cat.id)
               }
             >
-              {CATEGORY_ICONS[cat.name] || <Coffee size={18} />}
               {cat.name}
             </button>
           ))}
@@ -259,16 +236,14 @@ export default function OrderPage() {
           </div>
         ) : filteredMenus.length === 0 ? (
           <div className={styles.emptyState}>
-            <Coffee size={48} />
-            <p>메뉴가 없습니다</p>
+            <p>NO RESULTS FOUND</p>
           </div>
         ) : (
           Object.entries(groupedMenus).map(([catName, items]) => (
             <section key={catName} className={styles.menuSection}>
               <h2 className={styles.sectionTitle}>
-                {CATEGORY_ICONS[catName]}
                 {catName}
-                <span className={styles.sectionCount}>{items.length}</span>
+                <span className={styles.sectionCount}>({items.length})</span>
               </h2>
               <div className={styles.menuGrid}>
                 {items.map((menu) => (
@@ -282,7 +257,7 @@ export default function OrderPage() {
 
       {/* ── 푸터 ─────────────────────────── */}
       <footer className={styles.footer}>
-        <p>© 2026 IBM NCAFE. All rights reserved.</p>
+        <p>© 2026 NCAFE. ALL RIGHTS RESERVED.</p>
       </footer>
     </div>
   );
@@ -290,7 +265,6 @@ export default function OrderPage() {
 
 /* ── 메뉴 카드 컴포넌트 ──────────────────── */
 function MenuCard({ menu }: { menu: MenuItem }) {
-  const [isHovered, setIsHovered] = useState(false);
   const { addToCart } = useCart();
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -314,59 +288,48 @@ function MenuCard({ menu }: { menu: MenuItem }) {
       <Link href={`/order/${menu.id}`} className={styles.cardLink}>
         <article
           className={`${styles.card} ${menu.isSoldOut ? styles.cardSoldOut : ""}`}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
         >
-	        <div className={styles.cardImage}>
-	          {menu.imageSrc ? (
-	            <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
-	          ) : (
-	            <div className={styles.cardPlaceholder}>
-	              <Coffee size={32} />
-	            </div>
-          )}
-          {menu.isSoldOut && (
-            <div className={styles.soldOutOverlay}>
-              <span>SOLD OUT</span>
-            </div>
-          )}
-          <div
-            className={`${styles.cardOverlay} ${
-              isHovered ? styles.cardOverlayVisible : ""
-            }`}
-          >
-            <p className={styles.cardDesc}>{menu.description}</p>
+          <div className={styles.cardImage}>
+            {menu.imageSrc ? (
+              <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
+            ) : (
+              <div className={styles.cardPlaceholder}>
+                <span>NO IMAGE</span>
+              </div>
+            )}
+            {menu.isSoldOut && (
+              <div className={styles.soldOutOverlay}>
+                <span>SOLD OUT</span>
+              </div>
+            )}
           </div>
-        </div>
 
-        <div className={styles.cardBody}>
-          <div className={styles.cardCategory}>{menu.categoryName}</div>
-          <h3 className={styles.cardName}>{menu.korName}</h3>
-          <p className={styles.cardEngName}>{menu.engName}</p>
-          <div className={styles.cardFooter}>
-            <span className={styles.cardPrice}>
-              {(menu.price ?? 0).toLocaleString()}
-              <small>원</small>
-            </span>
+          <div className={styles.cardBody}>
+            <div className={styles.cardCategory}>{menu.categoryName}</div>
+            <h3 className={styles.cardName}>{menu.korName}</h3>
+            <p className={styles.cardEngName}>{menu.engName}</p>
+            <div className={styles.cardFooter}>
+              <span className={styles.cardPrice}>
+                {(menu.price ?? 0).toLocaleString()} KRW
+              </span>
+            </div>
           </div>
-        </div>
-      </article>
-    </Link>
-    <button
-      className={`${styles.addToCartBtn} ${menu.isSoldOut ? styles.disabled : ""}`}
-      onClick={handleAddToCart}
-      disabled={menu.isSoldOut}
-      aria-label="장바구니에 담기"
-    >
-      <Plus size={16} />
-      담기
-    </button>
-  </div>
+        </article>
+      </Link>
+      <button
+        className={`${styles.addToCartBtn} ${menu.isSoldOut ? styles.disabled : ""}`}
+        onClick={handleAddToCart}
+        disabled={menu.isSoldOut}
+      >
+        ADD TO CART
+      </button>
+    </div>
   );
 }
 
 /* ── 장바구니 드롭다운 컴포넌트 ───────────── */
 function CartDropdown({ onClose }: { onClose: () => void }) {
+  const router = useRouter();
   const { items, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCart();
 
   return (
@@ -374,59 +337,67 @@ function CartDropdown({ onClose }: { onClose: () => void }) {
       <div className={styles.cartOverlay} onClick={onClose} />
       <div className={styles.cartPanel}>
         <div className={styles.cartHeader}>
-          <h3>
-            <ShoppingCart size={20} />
-            장바구니
-          </h3>
+          <h3>CART</h3>
           <button className={styles.cartCloseBtn} onClick={onClose} aria-label="닫기">
-            <X size={20} />
+            CLOSE
           </button>
         </div>
 
         <div className={styles.cartBody}>
           {items.length === 0 ? (
             <div className={styles.cartEmpty}>
-              <ShoppingCart size={48} />
-              <p>장바구니가 비어있습니다</p>
+              <p>YOUR CART IS EMPTY</p>
             </div>
           ) : (
             <>
               {items.map((item) => (
-                <div key={item.menuId} className={styles.cartItem}>
-	                  <div className={styles.cartItemImage}>
-	                    {item.imageSrc ? (
-	                      <img src={resolvePublicImageSrc(item.imageSrc) || ""} alt={item.korName} />
-	                    ) : (
-	                      <Coffee size={24} />
-	                    )}
-	                  </div>
+                <div
+                  key={`${item.menuId}:${getCartItemOptionsKey(item.options)}`}
+                  className={styles.cartItem}
+                >
+                  <div className={styles.cartItemImage}>
+                    {item.imageSrc ? (
+                      <img src={resolvePublicImageSrc(item.imageSrc) || ""} alt={item.korName} />
+                    ) : (
+                      <div className={styles.cardPlaceholder} style={{fontSize: "10px"}}>NO IMAGE</div>
+                    )}
+                  </div>
                   <div className={styles.cartItemInfo}>
                     <h4>{item.korName}</h4>
                     <p className={styles.cartItemPrice}>
-                      {(item.price ?? 0).toLocaleString()}원
+                      {(item.price ?? 0).toLocaleString()} KRW
                     </p>
-                  </div>
-                  <div className={styles.cartItemActions}>
-                    <button
-                      onClick={() => updateQuantity(item.menuId, item.quantity - 1)}
-                      aria-label="수량 감소"
-                    >
-                      <Minus size={14} />
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.menuId, item.quantity + 1)}
-                      aria-label="수량 증가"
-                    >
-                      <Plus size={14} />
-                    </button>
+                    <div className={styles.cartItemActions}>
+                      <button
+                        onClick={() =>
+                          updateQuantity(
+                            item.menuId,
+                            item.quantity - 1,
+                            getCartItemOptionsKey(item.options),
+                          )
+                        }
+                      >
+                        -
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        onClick={() =>
+                          updateQuantity(
+                            item.menuId,
+                            item.quantity + 1,
+                            getCartItemOptionsKey(item.options),
+                          )
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <button
                     className={styles.cartItemRemove}
-                    onClick={() => removeFromCart(item.menuId)}
-                    aria-label="삭제"
+                    onClick={() => removeFromCart(item.menuId, getCartItemOptionsKey(item.options))}
                   >
-                    <X size={16} />
+                    REMOVE
                   </button>
                 </div>
               ))}
@@ -437,16 +408,19 @@ function CartDropdown({ onClose }: { onClose: () => void }) {
         {items.length > 0 && (
           <div className={styles.cartFooter}>
             <div className={styles.cartTotal}>
-              <span>총 금액</span>
+              <span>TOTAL</span>
               <span className={styles.cartTotalPrice}>
-                {(getTotalPrice() ?? 0).toLocaleString()}원
+                {(getTotalPrice() ?? 0).toLocaleString()} KRW
               </span>
             </div>
-            <button className={styles.cartClearBtn} onClick={clearCart}>
-              전체 삭제
-            </button>
-            <button className={styles.cartCheckoutBtn}>
-              주문하기
+            <button
+              className={styles.cartCheckoutBtn}
+              onClick={() => {
+                onClose();
+                router.push("/checkout");
+              }}
+            >
+              PROCEED TO CHECKOUT
             </button>
           </div>
         )}
@@ -454,3 +428,4 @@ function CartDropdown({ onClose }: { onClose: () => void }) {
     </>
   );
 }
+

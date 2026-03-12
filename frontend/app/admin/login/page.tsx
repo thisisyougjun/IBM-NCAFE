@@ -1,16 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { authAPI } from "@/app/lib/api";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const [redirect, setRedirect] = useState("/admin");
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      setRedirect(sp.get("redirect") || "/admin");
+    } catch {
+      setRedirect("/admin");
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,55 +28,55 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const data = await authAPI.adminLogin(username, password);
+      const data = await authAPI.login(username, password, "admin");
       if (!data) {
-        setError("로그인에 실패했습니다.");
+        setError("LOGIN FAILED.");
         return;
       }
-      // Client Cache를 우회하고 서버에서 새 쿠키 기반으로 페이지를 렌더링하도록 하드 이동
-      window.location.href = "/admin";
+      // Redirect to admin portal
+      window.location.href = redirect;
     } catch (err: any) {
-      setError(err.message || "서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+      setError(err.message || "UNABLE TO CONNECT TO SERVER.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.card}>
-        <div className={styles.logoWrap}>
-          <span className={styles.logo}>NCAFE</span>
-          <p className={styles.logoSub}>관리자 포털</p>
+    <div className={`${styles.page} fade-in`}>
+      <div className={styles.formCard}>
+        <div className={styles.formHeader}>
+          <h1 className={styles.formTitle}>ADMIN</h1>
+          <p className={styles.formSubtitle}>MANAGEMENT PORTAL</p>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
-          <div className={styles.fieldGroup}>
+          <div className={styles.field}>
             <label className={styles.label} htmlFor="username">
-              아이디
+              USERNAME
             </label>
             <input
               id="username"
               type="text"
               autoComplete="username"
               className={styles.input}
-              placeholder="관리자 아이디"
+              placeholder="ENTER ADMIN ID"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
 
-          <div className={styles.fieldGroup}>
+          <div className={styles.field}>
             <label className={styles.label} htmlFor="password">
-              비밀번호
+              PASSWORD
             </label>
             <input
               id="password"
               type="password"
               autoComplete="current-password"
               className={styles.input}
-              placeholder="비밀번호"
+              placeholder="ENTER PASSWORD"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -74,35 +84,31 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className={styles.errorBox} role="alert">
-              <span className={styles.errorIcon}>⚠</span>
-              {error}
+            <div className={styles.error} role="alert">
+              <span>{error}</span>
             </div>
           )}
 
           <button
             id="login-submit"
             type="submit"
-            className={styles.button}
+            className={styles.submitBtn}
             disabled={loading}
           >
             {loading ? (
               <span className={styles.spinner} />
             ) : (
-              <span>로그인</span>
+              <span>SIGN IN</span>
             )}
           </button>
         </form>
 
-        <p className={styles.hint}>
-          NCAFE 관리자만 접근 가능한 페이지입니다.
-        </p>
+        <div className={styles.backLink}>
+          <Link href="/order">
+            RETURN TO STORE
+          </Link>
+        </div>
       </div>
-
-      {/* 배경 장식 */}
-      <div className={styles.bgCircle1} />
-      <div className={styles.bgCircle2} />
-      <div className={styles.bgCircle3} />
     </div>
   );
 }

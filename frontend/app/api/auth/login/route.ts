@@ -13,11 +13,14 @@ const API_BASE = process.env.API_BASE_URL || 'http://localhost:8081';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const mode: 'user' | 'admin' = body?.mode === 'admin' ? 'admin' : 'user';
 
-    const loginRes = await fetch(`${API_BASE}/auth/login`, {
+    const upstreamPath = mode === 'admin' ? '/auth/admin/login' : '/auth/login';
+    const loginRes = await fetch(`${API_BASE}${upstreamPath}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      // mode는 upstream에 의미가 없으므로 제거
+      body: JSON.stringify({ username: body?.username, password: body?.password }),
     });
 
     if (!loginRes.ok) {
@@ -37,8 +40,8 @@ export async function POST(req: NextRequest) {
     session.user = {
       username: data.username,
       email: data.email,
-      name: data.name,
-      role: 'USER',
+      name: data.name || (data.role === 'ADMIN' ? '관리자' : ''),
+      role: (data.role === 'ADMIN' ? 'ADMIN' : 'USER'),
     };
     await session.save();
 

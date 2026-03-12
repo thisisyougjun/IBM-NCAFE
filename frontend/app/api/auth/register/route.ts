@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       username: data.username,
       email: data.email,
       name: data.name,
-      role: 'USER',
+      role: (data.role === 'ADMIN' ? 'ADMIN' : 'USER'),
     };
     await session.save();
 

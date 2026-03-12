@@ -1,22 +1,31 @@
 import { useForm, FormProvider } from 'react-hook-form';
 import { MenuFormData } from '@/types';
-import { mockCategories } from '@/mocks/menuData';
 import OptionSection from './OptionSection';
 import ImageUploadSection from './ImageUploadSection';
 import styles from './MenuForm.module.css';
+
+type CategoryOption = {
+    id: string | number;
+    korName: string;
+    icon?: string;
+};
 
 interface MenuFormProps {
     defaultValues?: Partial<MenuFormData>;
     onSubmit: (data: MenuFormData) => void;
     isSubmitting?: boolean;
     submitLabel?: string;
+    categories?: CategoryOption[];
+    showAdvancedSections?: boolean;
 }
 
 export default function MenuForm({
     defaultValues,
     onSubmit,
     isSubmitting = false,
-    submitLabel = '저장하기'
+    submitLabel = '저장하기',
+    categories = [],
+    showAdvancedSections = true,
 }: MenuFormProps) {
     const methods = useForm<MenuFormData>({
         defaultValues: {
@@ -75,10 +84,10 @@ export default function MenuForm({
                                 className={styles.select}
                             >
                                 <option value="">카테고리 선택</option>
-                                {mockCategories.map(cat => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.icon} {cat.korName}
-                                    </option>
+                                {categories.map((cat) => (
+                                  <option key={cat.id} value={cat.id}>
+                                    {cat.icon ? `${cat.icon} ` : ""}{cat.korName}
+                                  </option>
                                 ))}
                             </select>
                             {errors.categoryId && <span className={styles.error}>{errors.categoryId.message}</span>}
@@ -112,23 +121,27 @@ export default function MenuForm({
                     </div>
                 </section>
 
-                {/* 이미지 업로드 섹션 */}
-                <section className={styles.section}>
-                    <div className={styles.sectionHeader}>
+                {showAdvancedSections && (
+                  <>
+                    {/* 이미지 업로드 섹션 */}
+                    <section className={styles.section}>
+                      <div className={styles.sectionHeader}>
                         <h2 className={styles.sectionTitle}>메뉴 이미지</h2>
                         <p className={styles.sectionDescription}>메뉴를 대표하는 이미지를 등록해주세요 (첫 번째 이미지가 대표 이미지가 됩니다).</p>
-                    </div>
-                    <ImageUploadSection />
-                </section>
+                      </div>
+                      <ImageUploadSection />
+                    </section>
 
-                {/* 옵션 관리 섹션 */}
-                <section className={styles.section}>
-                    <div className={styles.sectionHeader}>
+                    {/* 옵션 관리 섹션 */}
+                    <section className={styles.section}>
+                      <div className={styles.sectionHeader}>
                         <h2 className={styles.sectionTitle}>옵션 관리</h2>
                         <p className={styles.sectionDescription}>사이즈, 샷 추가 등 메뉴의 옵션을 설정하세요.</p>
-                    </div>
-                    <OptionSection />
-                </section>
+                      </div>
+                      <OptionSection />
+                    </section>
+                  </>
+                )}
 
                 {/* 판매 설정 섹션 */}
                 <section className={styles.section}>

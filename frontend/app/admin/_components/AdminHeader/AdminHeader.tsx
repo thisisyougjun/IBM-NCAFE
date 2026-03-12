@@ -2,7 +2,6 @@
 
 import { Search, Bell, HelpCircle, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import ThemeToggle from "../ThemeToggle";
 import { authAPI } from "@/app/lib/api";
 import styles from "./AdminHeader.module.css";
 
@@ -46,7 +45,6 @@ export default function AdminHeader({
           </div>
         )}
 
-        <ThemeToggle />
 
         <button className={`${styles.iconButton} ${styles.notificationBadge}`}>
           <Bell size={20} />

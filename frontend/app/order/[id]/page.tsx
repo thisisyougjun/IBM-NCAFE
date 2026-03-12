@@ -4,16 +4,16 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./page.module.css";
-import { useTheme } from "@/app/_components/ThemeProvider";
+import { useCart } from "@/app/_components/CartProvider";
 import { fetchPublic, resolvePublicImageSrc } from "@/app/lib/publicFetch";
 import {
   Coffee,
   ArrowLeft,
-  Sun,
-  Moon,
   Check,
   ChevronLeft,
   ChevronRight,
+  Plus,
+  Minus,
 } from "lucide-react";
 
 /* ── 타입 정의 ───────────────────────────── */
@@ -43,7 +43,7 @@ interface MenuImage {
 export default function MenuDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
+  const { addToCart } = useCart();
   const menuId = params.id as string;
 
   const [menu, setMenu] = useState<MenuDetail | null>(null);
@@ -51,6 +51,12 @@ export default function MenuDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [relatedMenus, setRelatedMenus] = useState<MenuDetail[]>([]);
+  const [qty, setQty] = useState(1);
+
+  // 1차(프론트) 옵션 세트: 백엔드 옵션 API가 없어서 카테고리별 기본 옵션만 제공
+  const [temperature, setTemperature] = useState<"HOT" | "ICE">("ICE");
+  const [size, setSize] = useState<"S" | "M" | "L">("M");
+  const [extraShot, setExtraShot] = useState<0 | 1 | 2>(0);
 
   /* 데이터 fetch */
   useEffect(() => {
@@ -113,9 +119,6 @@ export default function MenuDetailPage() {
               <ArrowLeft size={20} />
               <span>메뉴</span>
             </Link>
-            <button className={styles.themeToggle} onClick={toggleTheme}>
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
           </div>
         </header>
         <div className={styles.loadingContainer}>
@@ -152,26 +155,50 @@ export default function MenuDetailPage() {
     );
   }
 
+  const basePrice = menu.price ?? 0;
+  const sizeDelta = size === "S" ? 0 : size === "M" ? 500 : 1000;
+  const shotDelta = extraShot * 500;
+  const optionsDelta = sizeDelta + shotDelta;
+  const unitPrice = basePrice + optionsDelta;
+  const totalPrice = unitPrice * qty;
+
+  const canOrder = menu.isAvailable && !menu.isSoldOut;
+
+  function handleAddToCart() {
+    const m = menu;
+    if (!m) return;
+    if (!canOrder) return;
+
+    addToCart({
+      menuId: m.id,
+      korName: m.korName,
+      engName: m.engName,
+      price: basePrice,
+      imageSrc: m.imageSrc,
+      categoryName: m.categoryName,
+      options: [
+        { name: "온도", value: temperature, priceDelta: 0 },
+        { name: "사이즈", value: size, priceDelta: sizeDelta },
+        ...(extraShot > 0
+          ? [{ name: "샷추가", value: `+${extraShot}`, priceDelta: shotDelta }]
+          : []),
+      ],
+    });
+    alert("장바구니에 담겼습니다.");
+  }
+
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} fade-in`}>
       {/* ── 헤더 ─────────────────────────── */}
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Link href="/order" className={styles.backButton}>
-            <ArrowLeft size={20} />
-            <span>메뉴</span>
+            <ArrowLeft size={16} />
+            <span>BACK TO MENU</span>
           </Link>
           <Link href="/order" className={styles.logo}>
-            <Coffee size={22} />
             <span>NCAFE</span>
           </Link>
-          <button
-            className={styles.themeToggle}
-            onClick={toggleTheme}
-            aria-label="테마 전환"
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
         </div>
       </header>
 
@@ -190,25 +217,14 @@ export default function MenuDetailPage() {
                     className={`${styles.imageNav} ${styles.imageNavPrev}`}
                     onClick={prevImage}
                   >
-                    <ChevronLeft size={24} />
+                    PREV
                   </button>
                   <button
                     className={`${styles.imageNav} ${styles.imageNavNext}`}
                     onClick={nextImage}
                   >
-                    <ChevronRight size={24} />
+                    NEXT
                   </button>
-                  <div className={styles.imageDots}>
-                    {images.map((_, i) => (
-                      <button
-                        key={i}
-                        className={`${styles.dot} ${
-                          i === currentImageIndex ? styles.dotActive : ""
-                        }`}
-                        onClick={() => setCurrentImageIndex(i)}
-                      />
-                    ))}
-                  </div>
                 </>
               )}
             </>
@@ -216,7 +232,7 @@ export default function MenuDetailPage() {
             <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
           ) : (
             <div className={styles.heroPlaceholder}>
-              <Coffee size={64} />
+              <span>NO IMAGE</span>
             </div>
           )}
         </div>
@@ -225,58 +241,116 @@ export default function MenuDetailPage() {
       {/* ── 메뉴 정보 ──────────────────── */}
       <section className={styles.content}>
         <div className={styles.contentInner}>
-          {/* 카테고리 & 상태 배지 */}
           <div className={styles.badges}>
             <span className={styles.categoryBadge}>{menu.categoryName}</span>
-            {menu.isAvailable && (
-              <span className={styles.availableBadge}>
-                <Check size={12} /> 주문 가능
-              </span>
-            )}
-            {menu.isSoldOut && (
-              <span className={styles.soldOutBadge}>품절</span>
-            )}
           </div>
 
-          {/* 제목 */}
           <h1 className={styles.menuName}>{menu.korName}</h1>
           <p className={styles.menuEngName}>{menu.engName}</p>
 
-          {/* 가격 */}
           <div className={styles.priceBox}>
             <span className={styles.price}>
-              {(menu.price ?? 0).toLocaleString()}
-              <small>원</small>
+              {unitPrice.toLocaleString()} KRW
             </span>
           </div>
 
-          {/* 구분선 */}
-          <div className={styles.divider} />
+          <div className={styles.optionSection}>
+            <span className={styles.sectionLabel}>CUSTOMIZE</span>
 
-          {/* 설명 */}
-          <div className={styles.descriptionSection}>
-            <h2 className={styles.sectionLabel}>메뉴 설명</h2>
-            <p className={styles.description}>
-              {menu.description || "이 메뉴에 대한 설명이 아직 없습니다."}
-            </p>
+            <div className={styles.optionGrid}>
+              <div className={styles.optionBlock}>
+                <div className={styles.optionTitle}>TEMPERATURE</div>
+                <div className={styles.pills}>
+                  <button
+                    type="button"
+                    className={`${styles.pill} ${temperature === "HOT" ? styles.pillActive : ""}`}
+                    onClick={() => setTemperature("HOT")}
+                  >
+                    HOT
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.pill} ${temperature === "ICE" ? styles.pillActive : ""}`}
+                    onClick={() => setTemperature("ICE")}
+                  >
+                    ICE
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.optionBlock}>
+                <div className={styles.optionTitle}>SIZE</div>
+                <div className={styles.pills}>
+                  <button
+                    type="button"
+                    className={`${styles.pill} ${size === "S" ? styles.pillActive : ""}`}
+                    onClick={() => setSize("S")}
+                  >
+                    S
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.pill} ${size === "M" ? styles.pillActive : ""}`}
+                    onClick={() => setSize("M")}
+                  >
+                    M (+500)
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.pill} ${size === "L" ? styles.pillActive : ""}`}
+                    onClick={() => setSize("L")}
+                  >
+                    L (+1,000)
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.optionBlock}>
+                <div className={styles.optionTitle}>EXTRA SHOT</div>
+                <div className={styles.pills}>
+                  {[0, 1, 2].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      className={`${styles.pill} ${extraShot === n ? styles.pillActive : ""}`}
+                      onClick={() => setExtraShot(n as 0 | 1 | 2)}
+                    >
+                      {n === 0 ? "NONE" : `+${n} (+${(n * 500).toLocaleString()})`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* 메뉴 정보 테이블 */}
-          <div className={styles.infoTable}>
-            <div className={styles.infoRow}>
-              <span className={styles.infoLabel}>카테고리</span>
-              <span className={styles.infoValue}>{menu.categoryName}</span>
+          <div className={styles.qtyRow}>
+            <span className={styles.sectionLabel}>QUANTITY</span>
+            <div className={styles.qtyControl}>
+              <button
+                type="button"
+                className={styles.qtyBtn}
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+              >
+                -
+              </button>
+              <span className={styles.qtyValue}>{qty}</span>
+              <button
+                type="button"
+                className={styles.qtyBtn}
+                onClick={() => setQty((q) => Math.min(99, q + 1))}
+              >
+                +
+              </button>
             </div>
-            <div className={styles.infoRow}>
-              <span className={styles.infoLabel}>판매 상태</span>
-              <span className={styles.infoValue}>
-                {menu.isSoldOut
-                  ? "품절"
-                  : menu.isAvailable
-                    ? "판매 중"
-                    : "미판매"}
-              </span>
-            </div>
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.descriptionSection}>
+            <span className={styles.sectionLabel}>DESCRIPTION</span>
+            <p className={styles.description}>
+              {menu.description || "NO DESCRIPTION AVAILABLE."}
+            </p>
           </div>
         </div>
       </section>
@@ -285,7 +359,7 @@ export default function MenuDetailPage() {
       {relatedMenus.length > 0 && (
         <section className={styles.relatedSection}>
           <div className={styles.contentInner}>
-            <h2 className={styles.relatedTitle}>같은 카테고리의 다른 메뉴</h2>
+            <h2 className={styles.relatedTitle}>YOU MAY ALSO LIKE</h2>
             <div className={styles.relatedGrid}>
               {relatedMenus.map((item) => (
                 <Link
@@ -301,13 +375,13 @@ export default function MenuDetailPage() {
                       />
                     ) : (
                       <div className={styles.relatedPlaceholder}>
-                        <Coffee size={24} />
+                        <span>NO IMAGE</span>
                       </div>
                     )}
                   </div>
                   <div className={styles.relatedInfo}>
                     <h3>{item.korName}</h3>
-                    <p>{(item.price ?? 0).toLocaleString()}원</p>
+                    <p>{(item.price ?? 0).toLocaleString()} KRW</p>
                   </div>
                 </Link>
               ))}
@@ -318,8 +392,38 @@ export default function MenuDetailPage() {
 
       {/* ── 푸터 ─────────────────────────── */}
       <footer className={styles.footer}>
-        <p>© 2026 IBM NCAFE. All rights reserved.</p>
+        <p>© 2026 NCAFE. ALL RIGHTS RESERVED.</p>
       </footer>
+
+      {/* ── Sticky CTA ───────────────────── */}
+      <div className={styles.stickyCta}>
+        <div className={styles.stickyPrice}>
+          <span>TOTAL PRICE</span>
+          <strong>{totalPrice.toLocaleString()} KRW</strong>
+        </div>
+        <div className={styles.stickyButtons}>
+          <button
+            type="button"
+            className={`${styles.addBtn} ${!canOrder ? styles.addBtnDisabled : ""}`}
+            onClick={handleAddToCart}
+            disabled={!canOrder}
+          >
+            {menu.isSoldOut ? "SOLD OUT" : "ADD TO CART"}
+          </button>
+          <button
+            type="button"
+            className={`${styles.payNowBtn} ${!canOrder ? styles.addBtnDisabled : ""}`}
+            onClick={() => {
+              handleAddToCart();
+              if (canOrder) window.location.href = "/checkout";
+            }}
+            disabled={!canOrder}
+          >
+            BUY NOW
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
+

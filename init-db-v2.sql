@@ -6,6 +6,7 @@
 
 -- 0. 확장 설치
 CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- 1. 사용자 및 권한 관리 (RBAC)
 CREATE TABLE IF NOT EXISTS roles (
@@ -174,3 +175,25 @@ CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_menus_category_id ON menus(category_id);
 CREATE INDEX IF NOT EXISTS rag_documents_embedding_idx ON rag_documents USING hnsw (embedding vector_cosine_ops);
+
+-- =============================================
+-- 기본 RBAC / 관리자 시드 데이터
+-- =============================================
+
+-- 기본 역할 생성
+INSERT INTO roles (name) VALUES ('ROLE_USER') ON CONFLICT (name) DO NOTHING;
+INSERT INTO roles (name) VALUES ('ROLE_ADMIN') ON CONFLICT (name) DO NOTHING;
+
+-- 기본 관리자 계정 (아이디/비번: admin / admin1234)
+-- - 비밀번호는 pgcrypto의 bcrypt(Blowfish)로 해싱 저장
+INSERT INTO users (username, email, password, name)
+VALUES ('admin', 'admin@ncafe.local', crypt('admin1234', gen_salt('bf')), '관리자')
+ON CONFLICT (username) DO NOTHING;
+
+-- 관리자에게 ROLE_ADMIN 부여
+INSERT INTO user_roles (user_id, role_id)
+SELECT u.id, r.id
+FROM users u
+JOIN roles r ON r.name = 'ROLE_ADMIN'
+WHERE u.username = 'admin'
+ON CONFLICT DO NOTHING;

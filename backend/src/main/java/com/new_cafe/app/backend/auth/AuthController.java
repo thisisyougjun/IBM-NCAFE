@@ -53,23 +53,45 @@ public class AuthController {
     @PostMapping("/admin/login")
     public ResponseEntity<?> adminLogin(@RequestBody AdminLoginRequest request,
                                         HttpServletResponse response) {
-        if (!adminUsername.equals(request.username())) {
-            return ResponseEntity.status(401).body(Map.of("message", "아이디 또는 비밀번호가 올바르지 않습니다."));
-        }
-        // BCrypt 비교 (기존 평문 비교 → 타이밍 공격 방어)
-        if (!passwordEncoder.matches(request.password(), adminPasswordHash)) {
-            return ResponseEntity.status(401).body(Map.of("message", "아이디 또는 비밀번호가 올바르지 않습니다."));
+        // 1. 시스템 관리자 (env) 확인
+        if (adminUsername.equals(request.username()) && 
+            passwordEncoder.matches(request.password(), adminPasswordHash)) {
+            
+            String accessToken  = jwtUtil.generateToken(adminUsername, "ADMIN");
+            String refreshToken = refreshTokenService.createRefreshToken(adminUsername, "ADMIN");
+            setRefreshCookie(response, refreshToken);
+
+            return ResponseEntity.ok(Map.of(
+                    "token",    accessToken,
+                    "username", adminUsername,
+                    "role",     "ADMIN"
+            ));
         }
 
-        String accessToken  = jwtUtil.generateToken(adminUsername, "ADMIN");
-        String refreshToken = refreshTokenService.createRefreshToken(adminUsername, "ADMIN");
-        setRefreshCookie(response, refreshToken);
+        // 2. DB 사용자 확인 (통합 로그인)
+        Optional<User> optUser = userRepository.findByUsername(request.username().trim());
+        if (optUser.isPresent()) {
+            User user = optUser.get();
+            if (passwordEncoder.matches(request.password(), user.getPassword())) {
+                boolean isAdmin = user.getRoles().stream()
+                        .anyMatch(r -> "ROLE_ADMIN".equals(r.getName()));
+                
+                if (isAdmin) {
+                    String accessToken  = jwtUtil.generateToken(user.getUsername(), "ADMIN");
+                    String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "ADMIN");
+                    setRefreshCookie(response, refreshToken);
 
-        return ResponseEntity.ok(Map.of(
-                "token",    accessToken,
-                "username", adminUsername,
-                "role",     "ADMIN"
-        ));
+                    return ResponseEntity.ok(Map.of(
+                            "token", accessToken,
+                            "name",  user.getName(),
+                            "username", user.getUsername(),
+                            "role",  "ADMIN"
+                    ));
+                }
+            }
+        }
+
+        return ResponseEntity.status(401).body(Map.of("message", "아이디 또는 비밀번호가 올바르지 않거나 관리자 권한이 없습니다."));
     }
 
     // ── 사용자 회원가입 ───────────────────────────────────────────────────────
@@ -115,6 +137,7 @@ public class AuthController {
                 "token", accessToken,
                 "name",  user.getName(),
                 "username", user.getUsername(),
+                "email", user.getEmail(),
                 "role",  "USER"
         ));
     }
@@ -149,6 +172,7 @@ public class AuthController {
                 "token", accessToken,
                 "name",  user.getName(),
                 "username", user.getUsername(),
+                "email", user.getEmail(),
                 "role",  role
         ));
     }

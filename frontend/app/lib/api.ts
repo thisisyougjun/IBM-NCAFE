@@ -56,16 +56,9 @@ export async function fetchAPI(endpoint: string, options?: RequestInit) {
 // 인증 관련 API
 // ─────────────────────────────────────────────────────────────
 export const authAPI = {
-  /** 일반 사용자 로그인 */
-  login: (username: string, password: string) =>
-    fetchAPI('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-    }),
-
-  /** 관리자 로그인 */
-  adminLogin: (username: string, password: string) =>
-    fetchAPI('/auth/admin/login', {
+  /** 로그인 (일반/관리자 선택 가능) */
+  login: (username: string, password: string, mode: 'user' | 'admin' = 'user') =>
+    fetchAPI(mode === 'admin' ? '/auth/admin/login' : '/auth/login', {
       method: 'POST',
       body: JSON.stringify({ username, password }),
     }),

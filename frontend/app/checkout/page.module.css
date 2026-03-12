@@ -1,0 +1,239 @@
+/* ===========================================
+   NCAFE - 결제 페이지 (thisisneverthat style)
+   Minimal Monochrome Aesthetic
+   =========================================== */
+
+.page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--color-black);
+  opacity: 0;
+  animation: fadeIn 0.8s forwards;
+}
+
+/* ── Header ──────────────────────────────── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--color-black);
+}
+
+.headerInner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Main ────────────────────────────────── */
+.main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+.panel {
+  width: 100%;
+}
+
+.panelTitle {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.panelTitle::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-black);
+}
+
+.orderTypeTabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.tab {
+  padding: 1.5rem;
+  border: 1px solid var(--color-gray-200);
+  font-size: 0.875rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.tab:hover {
+  border-color: var(--color-black);
+}
+
+.tabActive {
+  background: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
+}
+
+/* ── Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.field span {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-gray-400);
+}
+
+.field input, .field textarea {
+  width: 100%;
+  padding: 1rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-gray-200);
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-black);
+  transition: var(--transition-fast);
+}
+
+.field input:focus, .field textarea:focus {
+  border-color: var(--color-black);
+}
+
+.field input::placeholder, .field textarea::placeholder {
+  color: var(--color-gray-200);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+/* ── Order List ── */
+.items {
+  list-style: none;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.itemName {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.itemOptions {
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.itemMeta {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+}
+
+.itemRight {
+  font-size: 0.875rem;
+  font-weight: 900;
+}
+
+/* ── Summary ── */
+.summary {
+  margin-top: 5rem;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.summaryRow span {
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.summaryRow strong {
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.payBtn {
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.payBtn:disabled {
+  background: var(--color-gray-200);
+  color: var(--color-gray-400);
+  cursor: not-allowed;
+}
+
+.hint {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 768px) {
+  .main { padding: 3rem 1rem; }
+  .summaryRow strong { font-size: 1.5rem; }
+}
