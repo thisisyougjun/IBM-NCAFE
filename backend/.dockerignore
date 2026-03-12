@@ -1,10 +1,9 @@
 # .dockerignore
-# 기본적으로 모든 파일을 제외하고 필요한 빌드 결과물만 포함합니다.
-
-# 모든 파일 제외
-*
-
-# build 폴더 및 jar 파일 예외 허용 (디렉토리 경로를 순차적으로 허용해야 함)
-!build/
-!build/libs/
-!build/libs/*.jar
+.gradle
+.git
+src
+gradle
+*.bat
+HELP.md
+# build 디렉토리는 도커 빌드 시 관찰 대상에서 제외하면 안 됨 (JAR 파일 복사 필요)
+# !build/libs/*.jar  <- 이렇게 작성하기보다 그냥 build를 ignore 리스트에서 빼는 것이 안전함
