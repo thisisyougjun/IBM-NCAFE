@@ -10,8 +10,15 @@ jobs:
     runs-on: self-hosted
     steps:
 
-      - name: Clean up root owned files
-        run: docker run --rm -v ${{ github.workspace }}:/workspace alpine sh -c "rm -rf /workspace/data" || true
+      - name: Pre-clean workspace (permission-safe)
+        run: |
+          # Use a root container to remove stale root-owned artifacts before checkout cleanup runs.
+          docker run --rm -v ${{ github.workspace }}:/workspace alpine sh -c "
+            rm -rf /workspace/frontend/.next \
+                   /workspace/data \
+                   /workspace/tmp
+            chown -R $(id -u):$(id -g) /workspace || true
+          " || true
     
       - name: Checkout
         uses: actions/checkout@v4
