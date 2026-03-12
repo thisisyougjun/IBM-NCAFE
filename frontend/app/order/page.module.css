@@ -32,8 +32,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-family: "Noto Sans KR", sans-serif;
   font-size: 1.5rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.05em;
   color: var(--order-text);
   text-transform: uppercase;
@@ -51,6 +52,27 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--color-gray-500);
+}
+
+.cartButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-black);
+}
+
+.cartIconWrap {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── Theme Toggle (Minimal) ──────────────── */
@@ -289,17 +311,29 @@
 }
 
 /* ── Cart Sidebar ────────────────────────── */
+.cartOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background:
+    radial-gradient(circle, rgba(0, 0, 0, 0.2) 1px, transparent 1.4px) 0 0 / 4px 4px,
+    rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(2px) grayscale(0.2);
+}
+
 .cartPanel {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  top: 84px;
+  right: 2rem;
   width: 450px;
+  max-height: calc(100vh - 120px);
   background: var(--color-white);
-  border-left: 1px solid var(--color-black);
+  border: 1px solid var(--color-black);
+  border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
   z-index: 1001;
+  overflow: hidden;
 }
 
 .cartHeader {
@@ -318,7 +352,8 @@
 }
 
 .cartBody {
-  flex: 1;
+  flex: 0 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding: 2rem;
 }
@@ -353,7 +388,9 @@
 
 .cartItemPrice {
   font-size: 0.75rem;
-  font-weight: 900;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--color-gray-600);
 }
 
 .cartItemActions {
@@ -369,9 +406,9 @@
 }
 
 .cartFooter {
-  padding: 2rem;
+  padding: 1.25rem 0 0;
   border-top: 1px solid var(--color-black);
-  background: var(--color-white);
+  background: transparent;
 }
 
 .cartTotal {
@@ -432,8 +469,8 @@
   justify-content: center;
   border-radius: 50%;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -8px;
+  right: -9px;
 }
 
 .userArea {
@@ -544,7 +581,15 @@
     grid-template-columns: repeat(2, 1fr);
   }
   .cartPanel {
+    top: 0;
+    right: 0;
+    max-height: 100vh;
     width: 100%;
+    border-radius: 0;
+    border-left: 1px solid var(--color-black);
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
   }
   .controls {
     padding: 2rem 1rem;

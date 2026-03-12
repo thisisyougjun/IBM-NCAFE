@@ -156,10 +156,13 @@ export default function OrderPage() {
               onClick={() => setIsCartOpen(!isCartOpen)}
               aria-label="장바구니"
             >
-              CART
-              {getTotalItems() > 0 && (
-                <span className={styles.cartBadge}>{getTotalItems()}</span>
-              )}
+              <span className={styles.cartIconWrap}>
+                <ShoppingCart size={16} />
+                {getTotalItems() > 0 && (
+                  <span className={styles.cartBadge}>{getTotalItems()}</span>
+                )}
+              </span>
+              <span>CART</span>
             </button>
 
             {userName ? (
@@ -350,82 +353,86 @@ function CartDropdown({ onClose }: { onClose: () => void }) {
             </div>
           ) : (
             <>
-              {items.map((item) => (
-                <div
-                  key={`${item.menuId}:${getCartItemOptionsKey(item.options)}`}
-                  className={styles.cartItem}
-                >
-                  <div className={styles.cartItemImage}>
-                    {item.imageSrc ? (
-                      <img src={resolvePublicImageSrc(item.imageSrc) || ""} alt={item.korName} />
-                    ) : (
-                      <div className={styles.cardPlaceholder} style={{fontSize: "10px"}}>NO IMAGE</div>
-                    )}
-                  </div>
-                  <div className={styles.cartItemInfo}>
-                    <h4>{item.korName}</h4>
-                    <p className={styles.cartItemPrice}>
-                      {(item.price ?? 0).toLocaleString()} KRW
-                    </p>
-                    <div className={styles.cartItemActions}>
-                      <button
-                        onClick={() =>
-                          updateQuantity(
-                            item.menuId,
-                            item.quantity - 1,
-                            getCartItemOptionsKey(item.options),
-                          )
-                        }
-                      >
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button
-                        onClick={() =>
-                          updateQuantity(
-                            item.menuId,
-                            item.quantity + 1,
-                            getCartItemOptionsKey(item.options),
-                          )
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <button
-                    className={styles.cartItemRemove}
-                    onClick={() => removeFromCart(item.menuId, getCartItemOptionsKey(item.options))}
+              {items.map((item) => {
+                const optionsKey = getCartItemOptionsKey(item.options);
+                const optionDelta = item.options?.reduce((sum, opt) => sum + opt.priceDelta, 0) ?? 0;
+                const unitPrice = item.price + optionDelta;
+                const subtotal = unitPrice * item.quantity;
+
+                return (
+                  <div
+                    key={`${item.menuId}:${optionsKey}`}
+                    className={styles.cartItem}
                   >
-                    REMOVE
-                  </button>
+                    <div className={styles.cartItemImage}>
+                      {item.imageSrc ? (
+                        <img src={resolvePublicImageSrc(item.imageSrc) || ""} alt={item.korName} />
+                      ) : (
+                        <div className={styles.cardPlaceholder} style={{ fontSize: "10px" }}>NO IMAGE</div>
+                      )}
+                    </div>
+                    <div className={styles.cartItemInfo}>
+                      <h4>{item.korName}</h4>
+                      <p className={styles.cartItemPrice}>
+                        {`단가: ${unitPrice.toLocaleString()} KRW | 수량: ${item.quantity} | 소계: ${subtotal.toLocaleString()} KRW`}
+                      </p>
+                      <div className={styles.cartItemActions}>
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.menuId,
+                              item.quantity - 1,
+                              optionsKey,
+                            )
+                          }
+                        >
+                          -
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.menuId,
+                              item.quantity + 1,
+                              optionsKey,
+                            )
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      className={styles.cartItemRemove}
+                      onClick={() => removeFromCart(item.menuId, optionsKey)}
+                    >
+                      REMOVE
+                    </button>
+                  </div>
+                );
+              })}
+
+              <div className={styles.cartFooter}>
+                <div className={styles.cartTotal}>
+                  <span>TOTAL</span>
+                  <span className={styles.cartTotalPrice}>
+                    {(getTotalPrice() ?? 0).toLocaleString()} KRW
+                  </span>
                 </div>
-              ))}
+                <button
+                  className={styles.cartCheckoutBtn}
+                  onClick={() => {
+                    onClose();
+                    router.push("/checkout");
+                  }}
+                >
+                  PROCEED TO CHECKOUT
+                </button>
+              </div>
             </>
           )}
         </div>
-
-        {items.length > 0 && (
-          <div className={styles.cartFooter}>
-            <div className={styles.cartTotal}>
-              <span>TOTAL</span>
-              <span className={styles.cartTotalPrice}>
-                {(getTotalPrice() ?? 0).toLocaleString()} KRW
-              </span>
-            </div>
-            <button
-              className={styles.cartCheckoutBtn}
-              onClick={() => {
-                onClose();
-                router.push("/checkout");
-              }}
-            >
-              PROCEED TO CHECKOUT
-            </button>
-          </div>
-        )}
       </div>
     </>
   );
 }
-

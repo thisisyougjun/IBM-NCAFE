@@ -139,7 +139,7 @@ export default function CheckoutPage() {
                           </div>
                         )}
                         <div className={styles.itemMeta}>
-                          <span>UNIT {unitPrice.toLocaleString()} KRW</span>
+                          {`${it.korName} | 단가: ${unitPrice.toLocaleString()} KRW | 수량: ${it.quantity} | 소계: ${itemTotal.toLocaleString()} KRW`}
                         </div>
                         <div className={styles.qtyControls}>
                           <button
@@ -161,7 +161,6 @@ export default function CheckoutPage() {
                           </button>
                         </div>
                       </div>
-                      <div className={styles.itemRight}>{itemTotal.toLocaleString()} KRW</div>
                     </li>
                   );
                 })}
@@ -172,24 +171,30 @@ export default function CheckoutPage() {
                   <span>TOTAL AMOUNT</span>
                   <strong>{totalPrice.toLocaleString()} KRW</strong>
                 </div>
-                <button
-                  type="button"
-                  className={styles.payBtn}
-                  onClick={handlePay}
-                  disabled={!canSubmit || submitting}
-                >
-                  {submitting ? "PROCESSING..." : "PLACE ORDER"}
-                </button>
-                {!canSubmit && (
-                  <p className={styles.hint}>
-                    {items.length === 0 ? "YOUR CART IS EMPTY" : "PLEASE FILL IN ALL REQUIRED FIELDS"}
-                  </p>
-                )}
               </div>
             </div>
           )}
         </section>
       </main>
+
+      <div className={styles.stickyPayBar}>
+        <div className={styles.stickyPayInner}>
+          <div className={styles.stickyPayTotal}>TOTAL {totalPrice.toLocaleString()} KRW</div>
+          <button
+            type="button"
+            className={styles.payBtn}
+            onClick={handlePay}
+            disabled={!canSubmit || submitting}
+          >
+            {submitting ? "PROCESSING..." : "PLACE ORDER"}
+          </button>
+        </div>
+        {!canSubmit && (
+          <p className={styles.hint}>
+            {items.length === 0 ? "YOUR CART IS EMPTY" : "PLEASE FILL IN ALL REQUIRED FIELDS"}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
