@@ -14,8 +14,10 @@ from psycopg2.extras import RealDictCursor
 
 class RAGService:
     def __init__(self):
-        # multilingual-e5-large 모델 로드 (1024 차원)
-        self.model = SentenceTransformer('intfloat/multilingual-e5-large')
+        # 모델은 필요 시 로드(lazy)해서 서버 기동 블로킹을 피한다.
+        self.model_name = 'intfloat/multilingual-e5-large'
+        self.model = None
+        self.model_load_error = None
         self.embedding_dim = 1024
         
         # DB 연결 정보
@@ -26,6 +28,21 @@ class RAGService:
             'host': os.getenv('DB_HOST', 'localhost'),
             'port': os.getenv('DB_PORT', '5433')
         }
+
+    def _ensure_model(self) -> bool:
+        """임베딩 모델을 필요할 때만 로드합니다."""
+        if self.model is not None:
+            return True
+        if self.model_load_error is not None:
+            return False
+
+        try:
+            self.model = SentenceTransformer(self.model_name)
+            return True
+        except Exception as e:
+            self.model_load_error = str(e)
+            print(f"Error loading embedding model: {e}")
+            return False
     
     def get_connection(self):
         """데이터베이스 연결"""
@@ -37,6 +54,9 @@ class RAGService:
         multilingual-e5-large는 쿼리 앞에 "query: " 또는 "passage: " 접두사를 권장
         """
         # 문서 저장 시에는 "passage: " 접두사 사용
+        if not self._ensure_model():
+            raise RuntimeError("Embedding model is unavailable")
+
         embedding = self.model.encode(f"passage: {text}", normalize_embeddings=True)
         return embedding.tolist()
     
@@ -45,6 +65,9 @@ class RAGService:
         검색 쿼리를 임베딩 벡터로 변환
         """
         # 검색 시에는 "query: " 접두사 사용
+        if not self._ensure_model():
+            raise RuntimeError("Embedding model is unavailable")
+
         embedding = self.model.encode(f"query: {query}", normalize_embeddings=True)
         return embedding.tolist()
     

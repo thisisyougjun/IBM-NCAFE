@@ -1,32 +1,73 @@
-import { useState, useMemo } from "react";
+"use client";
+
 import MenuCard from "../MenuCard";
 import styles from "./MenuList.module.css";
 import { MenuResponse } from "./useMenus";
+import { useRouter } from "next/navigation";
+import { menuToSlug } from "@/app/admin/_lib/menuSlug";
 
 interface MenuListProps {
-  selectedCategory: number | undefined;
-  searchQuery: string | undefined;
   menus: MenuResponse[];
   setMenus: React.Dispatch<React.SetStateAction<MenuResponse[]>>;
 }
 
 export default function MenuList({
-  selectedCategory,
-  searchQuery,
   menus,
   setMenus,
 }: MenuListProps) {
-  // 서버에서 이미 필터링되어 오므로 filteredMenus 로직 제거하고 직접 사용
-  const handleToggleSoldOut = (id: number, isSoldOut: boolean) => {
-    setMenus(
-      menus.map((menu) => (menu.id === id ? { ...menu, isSoldOut } : menu)),
-    );
+  const router = useRouter();
+
+  const updateMenu = async (id: number, payload: Record<string, unknown>) => {
+    const res = await fetch(`/api/admin/menu/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: "메뉴 수정에 실패했습니다." }));
+      throw new Error(err.message || "메뉴 수정에 실패했습니다.");
+    }
+
+    return res.json();
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm("정말 이 메뉴를 삭제하시겠습니까?")) {
-      setMenus(menus.filter((menu) => menu.id !== id));
+  const handleToggleSoldOut = async (menu: MenuResponse) => {
+    const nextSoldOut = !menu.isSoldOut;
+
+    try {
+      const updated = await updateMenu(menu.id, {
+        isSoldOut: nextSoldOut,
+      });
+
+      setMenus((prev) =>
+        prev.map((m) =>
+          m.id === menu.id
+            ? { ...m, isSoldOut: updated.isSoldOut ?? nextSoldOut }
+            : m,
+        ),
+      );
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "품절 상태 변경에 실패했습니다.");
     }
+  };
+
+  const handleUpdatePrice = async (menu: MenuResponse, price: number) => {
+    try {
+      const updated = await updateMenu(menu.id, { price });
+      setMenus((prev) =>
+        prev.map((m) =>
+          m.id === menu.id ? { ...m, price: updated.price ?? price } : m,
+        ),
+      );
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "가격 수정에 실패했습니다.");
+    }
+  };
+
+  const handleEditOptions = (menu: MenuResponse) => {
+    const slug = menuToSlug(menu);
+    router.push(`/admin/menu/${slug}#options`);
   };
 
   return (
@@ -36,8 +77,10 @@ export default function MenuList({
           <MenuCard
             key={menu.id}
             menu={menu}
-            // onToggleSoldOut={handleToggleSoldOut} // MenuCard에서 사용하도록 추가 가능
-            // onDelete={handleDelete}
+            detailHref={`/admin/menu/${menuToSlug(menu)}`}
+            onToggleSoldOut={() => handleToggleSoldOut(menu)}
+            onUpdatePrice={(price) => handleUpdatePrice(menu, price)}
+            onEditOptions={() => handleEditOptions(menu)}
           />
         ))}
       </div>

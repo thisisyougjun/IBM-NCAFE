@@ -51,6 +51,9 @@ public class MenuJpaEntity {
     @Column(name = "is_available")
     private Boolean isAvailable;
 
+    @Column(name = "is_sold_out")
+    private Boolean isSoldOut;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

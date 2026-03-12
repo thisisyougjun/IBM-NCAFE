@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import Button from "@/components/common/Button";
 import styles from "./MenusPageHeader.module.css";
-import { Menu } from "@/types";
 
 export default function MenusPageHeader({
   searchQuery,
@@ -23,9 +22,6 @@ export default function MenusPageHeader({
           </p>
         </div>
         <div className={styles.actions}>
-          <Button variant="outline" size="sm">
-            엑셀 다운로드
-          </Button>
           <Link href="/admin/menus/new">
             <Button>
               <Plus size={16} />

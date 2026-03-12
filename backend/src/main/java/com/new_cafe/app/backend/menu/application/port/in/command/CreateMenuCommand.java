@@ -19,4 +19,5 @@ public class CreateMenuCommand {
     private Integer price;
     private Long categoryId;
     private Boolean isAvailable;
+    private Boolean isSoldOut;
 }

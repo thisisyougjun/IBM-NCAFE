@@ -33,8 +33,6 @@ export default function MenusPage() {
 
       {/* 메뉴 그리드 */}
       <MenuList
-        selectedCategory={selectedCategory}
-        searchQuery={searchQuery}
         menus={menus}
         setMenus={setMenus}
       />

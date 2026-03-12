@@ -33,15 +33,7 @@ export function useMenuDetail(id: string) {
           const imagesData = await imagesResponse.json();
           if (imagesData.images && Array.isArray(imagesData.images)) {
             imagesList = imagesData.images.map((img: any) => {
-              // URL 처리 로직
-              let imageUrl = img.url;
-              if (!imageUrl.startsWith("http")) {
-                if (imageUrl.startsWith("/")) {
-                  imageUrl = `/api${imageUrl}`;
-                } else {
-                  imageUrl = `/api/image/${imageUrl}`;
-                }
-              }
+              const imageUrl = resolvePublicImageSrc(img.url) || "";
 
               return {
                 id: String(img.id),

@@ -28,21 +28,24 @@ export async function fetchPublic(path: string, init?: RequestInit) {
 
 export function resolvePublicImageSrc(src?: string | null) {
   if (!src) return null;
-  if (/^https?:\/\//i.test(src)) return src;
+  const apiImagePrefix = "/api/images/";
+
+  if (/^https?:\/\//i.test(src)) {
+    try {
+      const url = new URL(src);
+      const marker = "/images/";
+      const index = url.pathname.indexOf(marker);
+      if (index >= 0) {
+        return `${apiImagePrefix}${url.pathname.slice(index + marker.length)}`;
+      }
+      return src;
+    } catch {
+      return src;
+    }
+  }
 
   const trimmed = src.replace(/^\/+/, "");
-
-  // If a public backend base URL is provided, use it (bypasses BFF).
-  if (BACKEND_BASE) {
-    if (trimmed.startsWith("images/")) {
-      return `${BACKEND_BASE}/${trimmed}`;
-    }
-    return `${BACKEND_BASE}/images/${trimmed}`;
-  }
-
-  // Otherwise, use clean /images/ path. Next.js rewrites will handle proxying to backend.
-  if (trimmed.startsWith("images/")) {
-    return `/${trimmed}`;
-  }
-  return `/images/${trimmed}`;
+  if (trimmed.startsWith("api/images/")) return `/${trimmed}`;
+  if (trimmed.startsWith("images/")) return `${apiImagePrefix}${trimmed.slice("images/".length)}`;
+  return `${apiImagePrefix}${trimmed}`;
 }

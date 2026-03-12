@@ -4,6 +4,8 @@
    =========================================== */
 
 .page {
+  --cart-panel-width: 450px;
+  --cart-panel-gap: 2rem;
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--order-text);
@@ -228,7 +230,7 @@
   height: 100%;
   object-fit: cover;
   transition: var(--transition-smooth);
-  filter: grayscale(100%);
+  filter: grayscale(0%);
 }
 
 .cardWrapper:hover .cardImage img {
@@ -321,12 +323,17 @@
   backdrop-filter: blur(2px) grayscale(0.2);
 }
 
+.cartOpen .cardImage img,
+.cartOpen .cardPlaceholder {
+  filter: grayscale(100%);
+}
+
 .cartPanel {
   position: fixed;
   top: 84px;
   right: 2rem;
-  width: 450px;
-  max-height: calc(100vh - 120px);
+   width: var(--cart-panel-width);
+   max-height: calc(100vh - 108px);
   background: var(--color-white);
   border: 1px solid var(--color-black);
   border-radius: 0.75rem;
@@ -352,10 +359,18 @@
 }
 
 .cartBody {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   min-height: 0;
+  max-height: 100%;
   overflow-y: auto;
   padding: 2rem;
+}
+
+.cartOpen .controls,
+.cartOpen .main,
+.cartOpen .footer {
+  margin-right: calc(var(--cart-panel-width) + var(--cart-panel-gap));
+  transition: margin-right var(--transition-fast);
 }
 
 .cartItem {
@@ -596,5 +611,10 @@
   }
   .main {
     padding: 0 1rem;
+  }
+  .cartOpen .controls,
+  .cartOpen .main,
+  .cartOpen .footer {
+    margin-right: 0;
   }
 }

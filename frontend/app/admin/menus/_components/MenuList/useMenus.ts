@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import { Menu } from "@/types";
-import { mockCategories } from "@/mocks/menuData";
-
 export interface MenuResponse {
   id: number;
   korName: string;
@@ -29,10 +26,10 @@ export function useMenus(
   const [menus, setMenus] = useState<MenuResponse[]>([]);
 
   useEffect(() => {
-    const fetchMenus = async () => {
-      const url = new URL(`/api/admin/menu`, window.location.origin);
+    const controller = new AbortController();
 
-      const params = url.searchParams;
+    const fetchMenus = async () => {
+      const params = new URLSearchParams();
       if (selectedCategory) {
         params.set("categoryId", selectedCategory.toString());
       }
@@ -40,10 +37,20 @@ export function useMenus(
         params.set("searchQuery", searchQuery);
       }
 
+      const queryString = params.toString();
+      const url = queryString ? `/api/admin/menu?${queryString}` : "/api/admin/menu";
+
       try {
-        const response = await fetch(url.toString());
+        const response = await fetch(url, { signal: controller.signal });
         if (!response.ok) {
-          throw new Error("Failed to fetch menus");
+          const errorText = await response.text();
+          if (response.status === 401 || response.status === 403) {
+            window.location.href = "/admin/login";
+            return;
+          }
+          throw new Error(
+            `Failed to fetch menus (${response.status}): ${errorText || response.statusText}`,
+          );
         }
         const data = await response.json();
 
@@ -87,11 +94,15 @@ export function useMenus(
 
         // setMenus(data);
       } catch (error) {
+        if (controller.signal.aborted) return;
         console.error("Error fetching menus:", error);
+        setMenus([]);
       }
     };
 
     fetchMenus();
+
+    return () => controller.abort();
   }, [selectedCategory, searchQuery]);
 
   return { menus, setMenus };

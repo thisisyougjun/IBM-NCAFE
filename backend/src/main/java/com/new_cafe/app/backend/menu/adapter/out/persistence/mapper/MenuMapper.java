@@ -33,6 +33,7 @@ public class MenuMapper {
                 .price(entity.getPrice())
                 .categoryId(entity.getCategoryId())
                 .isAvailable(entity.getIsAvailable())
+                .isSoldOut(entity.getIsSoldOut())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .category(category)
@@ -49,6 +50,7 @@ public class MenuMapper {
                 .price(domain.getPrice())
                 .categoryId(domain.getCategoryId())
                 .isAvailable(domain.getIsAvailable())
+                .isSoldOut(domain.getIsSoldOut())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
                 .build();

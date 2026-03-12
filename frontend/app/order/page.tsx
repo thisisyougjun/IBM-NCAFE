@@ -138,7 +138,13 @@ export default function OrderPage() {
       }, {});
 
   return (
-    <div className={`${styles.page} fade-in`}>
+    <div
+      className={[
+        styles.page,
+        "fade-in",
+        isCartOpen ? styles.cartOpen : "",
+      ].join(" ")}
+    >
       {/* ── 헤더 ─────────────────────────── */}
       <header className={styles.header}>
         <div className={styles.headerInner}>

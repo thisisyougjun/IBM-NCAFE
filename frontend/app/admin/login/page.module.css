@@ -11,8 +11,6 @@
   background: var(--bg-primary);
   color: var(--color-black);
   padding: 2rem;
-  opacity: 0;
-  animation: fadeIn 0.8s forwards;
 }
 
 .formCard {

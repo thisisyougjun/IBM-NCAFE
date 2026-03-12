@@ -60,7 +60,7 @@ public class MenuService implements MenuUseCase {
                             .categoryName(menu.getCategory() != null ? menu.getCategory().getName() : null)
                             .imageSrc(imageSrc)
                             .isAvailable(menu.getIsAvailable())
-                            .isSoldOut(false)
+                            .isSoldOut(menu.getIsSoldOut())
                             .sortOrder(0)
                             .createdAt(menu.getCreatedAt())
                             .updatedAt(menu.getUpdatedAt())
@@ -116,6 +116,7 @@ public class MenuService implements MenuUseCase {
                 .price(command.getPrice())
                 .categoryId(command.getCategoryId())
                 .isAvailable(command.getIsAvailable() != null ? command.getIsAvailable() : true)
+                .isSoldOut(command.getIsSoldOut() != null ? command.getIsSoldOut() : false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -137,6 +138,7 @@ public class MenuService implements MenuUseCase {
                 .price(command.getPrice() != null ? command.getPrice() : existing.getPrice())
                 .categoryId(command.getCategoryId() != null ? command.getCategoryId() : existing.getCategoryId())
                 .isAvailable(command.getIsAvailable() != null ? command.getIsAvailable() : existing.getIsAvailable())
+                .isSoldOut(command.getIsSoldOut() != null ? command.getIsSoldOut() : existing.getIsSoldOut())
                 .createdAt(existing.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -161,7 +163,7 @@ public class MenuService implements MenuUseCase {
                 .categoryId(menu.getCategoryId())
                 .categoryName(menu.getCategory() != null ? menu.getCategory().getName() : null)
                 .isAvailable(menu.getIsAvailable())
-                .isSoldOut(false)
+                .isSoldOut(menu.getIsSoldOut())
                 .sortOrder(0)
                 .createdAt(menu.getCreatedAt())
                 .updatedAt(menu.getUpdatedAt())
