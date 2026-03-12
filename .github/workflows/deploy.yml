@@ -55,11 +55,11 @@ jobs:
 
       - name: Clean up existing containers
         run: |
-          docker rm -f yj-dev-db yj-dev-frontend yj-dev-backend || true
-          docker compose --profile with-db down || true
+          docker rm -f yj-dev-db yj-dev-frontend yj-dev-backend yj-dev-agent || true
+          docker compose -f docker-compose.yml --profile with-db down --remove-orphans -v || true
 
       - name: Build and Deploy
-        run: docker compose --profile with-db up --build -d
+        run: docker compose -f docker-compose.yml --profile with-db up --build -d
 
       - name: DB Migration
         run: |
@@ -69,7 +69,7 @@ jobs:
       - name: Verify deployment
         run: |
           echo "=== Container Status ==="
-          docker compose ps
+          docker compose -f docker-compose.yml ps
           sleep 15
           echo ""
           echo "=== Health Check ==="
