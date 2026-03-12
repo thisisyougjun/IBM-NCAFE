@@ -1,5 +1,8 @@
 buildscript {
 	repositories {
+		maven { url 'https://repo.spring.io/release' }
+		maven { url 'https://repo1.maven.org/maven2' }
+		maven { url 'https://plugins.gradle.org/m2/' }
 		mavenCentral()
 	}
 	dependencies {
@@ -26,6 +29,8 @@ java {
 }
 
 repositories {
+	maven { url 'https://repo.spring.io/release' }
+	maven { url 'https://repo1.maven.org/maven2' }
 	mavenCentral()
 }
 
