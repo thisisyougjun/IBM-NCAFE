@@ -1,18 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "./_components/ThemeProvider";
 import { CartProvider } from "./_components/CartProvider";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import ChatbotWidget from "@/components/ChatbotWidget/ChatbotWidget";
 
 export const metadata: Metadata = {
   title: "NCAFE | 커피 한 잔의 여유",
@@ -38,9 +28,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body>
         <ThemeProvider>
-          <CartProvider>{children}</CartProvider>
+          <CartProvider>
+            {children}
+            <ChatbotWidget />
+          </CartProvider>
         </ThemeProvider>
       </body>
     </html>
