@@ -5,13 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 import { getCartItemOptionsKey, useCart } from "@/app/_components/CartProvider";
-import { Coffee, ArrowLeft, MapPin, ShoppingBag, Truck } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 type OrderType = "PICKUP" | "DELIVERY";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, getTotalPrice, clearCart } = useCart();
+  const { items, getTotalPrice, clearCart, updateQuantity } = useCart();
   const [orderType, setOrderType] = useState<OrderType>("PICKUP");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -45,7 +45,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className={`${styles.page} fade-in`}>
+    <div className={styles.page + " fade-in"}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Link href="/order" className={styles.back}>
@@ -60,89 +60,117 @@ export default function CheckoutPage() {
       </header>
 
       <main className={styles.main}>
-        <section className={styles.panel}>
-          <h2 className={styles.panelTitle}>ORDER TYPE</h2>
-          <div className={styles.orderTypeTabs}>
-            <button
-              type="button"
-              className={`${styles.tab} ${orderType === "PICKUP" ? styles.tabActive : ""}`}
-              onClick={() => setOrderType("PICKUP")}
-            >
-              PICKUP
-            </button>
-            <button
-              type="button"
-              className={`${styles.tab} ${orderType === "DELIVERY" ? styles.tabActive : ""}`}
-              onClick={() => setOrderType("DELIVERY")}
-            >
-              DELIVERY
-            </button>
-          </div>
-        </section>
+        <div className={styles.formColumn}>
+          <section className={styles.panel}>
+            <h2 className={styles.panelTitle}>ORDER TYPE</h2>
+            <div className={styles.orderTypeTabs}>
+              <button
+                type="button"
+                className={[styles.tab, orderType === "PICKUP" ? styles.tabActive : ""].join(" ")}
+                onClick={() => setOrderType("PICKUP")}
+              >
+                PICKUP
+              </button>
+              <button
+                type="button"
+                className={[styles.tab, orderType === "DELIVERY" ? styles.tabActive : ""].join(" ")}
+                onClick={() => setOrderType("DELIVERY")}
+              >
+                DELIVERY
+              </button>
+            </div>
+          </section>
 
-        <section className={styles.panel}>
-          <h2 className={styles.panelTitle}>CUSTOMER INFORMATION</h2>
-          <div className={styles.form}>
-            <label className={styles.field}>
-              <span>NAME</span>
-              <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="ENTER YOUR NAME" />
-            </label>
-            <label className={styles.field}>
-              <span>CONTACT</span>
-              <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="010-0000-0000" />
-            </label>
-            {orderType === "DELIVERY" && (
+          <section className={styles.panel}>
+            <h2 className={styles.panelTitle}>CUSTOMER INFORMATION</h2>
+            <div className={styles.form}>
               <label className={styles.field}>
-                <span>ADDRESS</span>
-                <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="ENTER DELIVERY ADDRESS" />
+                <span>NAME</span>
+                <input value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="ENTER YOUR NAME" />
               </label>
-            )}
-            <label className={styles.field}>
-              <span>SPECIAL NOTES</span>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="ANY SPECIAL REQUESTS?" rows={3} />
-            </label>
-          </div>
-        </section>
+              <label className={styles.field}>
+                <span>CONTACT</span>
+                <input value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} placeholder="010-0000-0000" />
+              </label>
+              {orderType === "DELIVERY" && (
+                <label className={styles.field}>
+                  <span>ADDRESS</span>
+                  <input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="ENTER DELIVERY ADDRESS" />
+                </label>
+              )}
+              <label className={styles.field}>
+                <span>SPECIAL NOTES</span>
+                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="ANY SPECIAL REQUESTS?" rows={3} />
+              </label>
+            </div>
+          </section>
+        </div>
 
-        <section className={styles.panel}>
+        <section className={[styles.panel, styles.summaryPanel].join(" ")}>
           <h2 className={styles.panelTitle}>ORDER SUMMARY</h2>
 
           {items.length === 0 ? (
             <div className={styles.empty}>
               <p>YOUR CART IS EMPTY</p>
-              <Link href="/order" style={{textDecoration: 'underline'}}>BACK TO MENU</Link>
+              <Link href="/order" style={{ textDecoration: "underline" }}>
+                BACK TO MENU
+              </Link>
             </div>
           ) : (
-            <>
+            <div className={styles.summaryContent}>
               <ul className={styles.items}>
-                {items.map((it) => (
-                  <li key={`${it.menuId}:${getCartItemOptionsKey(it.options)}`} className={styles.itemRow}>
-                    <div className={styles.itemLeft}>
-                      <div className={styles.itemName}>{it.korName}</div>
-                      {it.options && it.options.length > 0 && (
-                        <div className={styles.itemOptions}>
-                          {it.options.map((o) => (
-                            <span key={`${o.name}:${o.value}`}>
-                              {o.name}: {o.value} {o.priceDelta ? `(+${o.priceDelta.toLocaleString()}) ` : ""}
-                            </span>
-                          ))}
+                {items.map((it) => {
+                  const optionsKey = getCartItemOptionsKey(it.options);
+                  const optionDelta = it.options?.reduce((sum, opt) => sum + opt.priceDelta, 0) ?? 0;
+                  const unitPrice = it.price + optionDelta;
+                  const itemTotal = unitPrice * it.quantity;
+
+                  return (
+                    <li key={it.menuId + ":" + optionsKey} className={styles.itemRow}>
+                      <div className={styles.itemLeft}>
+                        <div className={styles.itemName}>{it.korName}</div>
+                        {it.options && it.options.length > 0 && (
+                          <div className={styles.itemOptions}>
+                            {it.options.map((o) => (
+                              <span key={o.name + ":" + o.value}>
+                                {o.name}: {o.value} {o.priceDelta ? "(+" + o.priceDelta.toLocaleString() + ") " : ""}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <div className={styles.itemMeta}>
+                          <span>UNIT {unitPrice.toLocaleString()} KRW</span>
                         </div>
-                      )}
-                      <div className={styles.itemMeta}>
-                        QTY {it.quantity} · UNIT {(it.price ?? 0).toLocaleString()} KRW
+                        <div className={styles.qtyControls}>
+                          <button
+                            type="button"
+                            className={styles.qtyBtn}
+                            onClick={() => updateQuantity(it.menuId, it.quantity - 1, optionsKey)}
+                            aria-label={`${it.korName} quantity decrease`}
+                          >
+                            -
+                          </button>
+                          <span className={styles.qtyValue}>QTY {it.quantity}</span>
+                          <button
+                            type="button"
+                            className={styles.qtyBtn}
+                            onClick={() => updateQuantity(it.menuId, Math.min(99, it.quantity + 1), optionsKey)}
+                            aria-label={`${it.korName} quantity increase`}
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className={styles.itemRight}>
-                      {((it.price + (it.options?.reduce((s, o) => s + o.priceDelta, 0) || 0)) * it.quantity).toLocaleString()} KRW
-                    </div>
-                  </li>
-                ))}
+                      <div className={styles.itemRight}>{itemTotal.toLocaleString()} KRW</div>
+                    </li>
+                  );
+                })}
               </ul>
 
-              <div className={styles.summary}>
+              <div className={styles.summaryFooter}>
                 <div className={styles.summaryRow}>
                   <span>TOTAL AMOUNT</span>
-                  <strong>{(totalPrice ?? 0).toLocaleString()} KRW</strong>
+                  <strong>{totalPrice.toLocaleString()} KRW</strong>
                 </div>
                 <button
                   type="button"
@@ -154,18 +182,14 @@ export default function CheckoutPage() {
                 </button>
                 {!canSubmit && (
                   <p className={styles.hint}>
-                    {items.length === 0
-                      ? "YOUR CART IS EMPTY"
-                      : "PLEASE FILL IN ALL REQUIRED FIELDS"}
+                    {items.length === 0 ? "YOUR CART IS EMPTY" : "PLEASE FILL IN ALL REQUIRED FIELDS"}
                   </p>
                 )}
               </div>
-            </>
+            </div>
           )}
         </section>
       </main>
     </div>
   );
 }
-
-

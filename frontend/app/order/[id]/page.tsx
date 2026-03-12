@@ -9,11 +9,6 @@ import { fetchPublic, resolvePublicImageSrc } from "@/app/lib/publicFetch";
 import {
   Coffee,
   ArrowLeft,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  Minus,
 } from "lucide-react";
 
 /* ── 타입 정의 ───────────────────────────── */
@@ -164,26 +159,35 @@ export default function MenuDetailPage() {
 
   const canOrder = menu.isAvailable && !menu.isSoldOut;
 
-  function handleAddToCart() {
+  const selectedOptions = [
+    { name: "온도", value: temperature, priceDelta: 0 },
+    { name: "사이즈", value: size, priceDelta: sizeDelta },
+    ...(extraShot > 0
+      ? [{ name: "샷추가", value: `+${extraShot}`, priceDelta: shotDelta }]
+      : []),
+  ];
+
+  function addSelectionToCart(quantity: number) {
     const m = menu;
     if (!m) return;
     if (!canOrder) return;
 
-    addToCart({
-      menuId: m.id,
-      korName: m.korName,
-      engName: m.engName,
-      price: basePrice,
-      imageSrc: m.imageSrc,
-      categoryName: m.categoryName,
-      options: [
-        { name: "온도", value: temperature, priceDelta: 0 },
-        { name: "사이즈", value: size, priceDelta: sizeDelta },
-        ...(extraShot > 0
-          ? [{ name: "샷추가", value: `+${extraShot}`, priceDelta: shotDelta }]
-          : []),
-      ],
-    });
+    for (let i = 0; i < quantity; i += 1) {
+      addToCart({
+        menuId: m.id,
+        korName: m.korName,
+        engName: m.engName,
+        price: basePrice,
+        imageSrc: m.imageSrc,
+        categoryName: m.categoryName,
+        options: selectedOptions,
+      });
+    }
+  }
+
+  function handleAddToCart() {
+    if (!canOrder) return;
+    addSelectionToCart(qty);
     alert("장바구니에 담겼습니다.");
   }
 
@@ -202,57 +206,13 @@ export default function MenuDetailPage() {
         </div>
       </header>
 
-      {/* ── 히어로 이미지 ────────────────── */}
-      <section className={styles.hero}>
-        <div className={styles.heroImage}>
-          {images.length > 0 ? (
-            <>
-              <img
-                src={resolvePublicImageSrc(images[currentImageIndex].url) || ""}
-                alt={menu.korName}
-              />
-              {images.length > 1 && (
-                <>
-                  <button
-                    className={`${styles.imageNav} ${styles.imageNavPrev}`}
-                    onClick={prevImage}
-                  >
-                    PREV
-                  </button>
-                  <button
-                    className={`${styles.imageNav} ${styles.imageNavNext}`}
-                    onClick={nextImage}
-                  >
-                    NEXT
-                  </button>
-                </>
-              )}
-            </>
-          ) : menu.imageSrc ? (
-            <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
-          ) : (
-            <div className={styles.heroPlaceholder}>
-              <span>NO IMAGE</span>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── 메뉴 정보 ──────────────────── */}
-      <section className={styles.content}>
-        <div className={styles.contentInner}>
+      <main className={styles.detailGrid}>
+        <aside className={styles.sidebarColumn}>
           <div className={styles.badges}>
             <span className={styles.categoryBadge}>{menu.categoryName}</span>
           </div>
-
           <h1 className={styles.menuName}>{menu.korName}</h1>
           <p className={styles.menuEngName}>{menu.engName}</p>
-
-          <div className={styles.priceBox}>
-            <span className={styles.price}>
-              {unitPrice.toLocaleString()} KRW
-            </span>
-          </div>
 
           <div className={styles.optionSection}>
             <span className={styles.sectionLabel}>CUSTOMIZE</span>
@@ -344,7 +304,68 @@ export default function MenuDetailPage() {
             </div>
           </div>
 
-          <div className={styles.divider} />
+          <div className={styles.ctaPanel}>
+            <div className={styles.priceSummary}>
+              <span>TOTAL PRICE</span>
+              <strong>{totalPrice.toLocaleString()} KRW</strong>
+            </div>
+            <div className={styles.ctaButtons}>
+              <button
+                type="button"
+                className={`${styles.addBtn} ${!canOrder ? styles.addBtnDisabled : ""}`}
+                onClick={handleAddToCart}
+                disabled={!canOrder}
+              >
+                {menu.isSoldOut ? "SOLD OUT" : "ADD TO CART"}
+              </button>
+              <button
+                type="button"
+                className={`${styles.payNowBtn} ${!canOrder ? styles.addBtnDisabled : ""}`}
+                onClick={() => {
+                  addSelectionToCart(qty);
+                  if (canOrder) router.push("/checkout");
+                }}
+                disabled={!canOrder}
+              >
+                BUY NOW
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <section className={styles.mainColumn}>
+          <div className={styles.heroImage}>
+            {images.length > 0 ? (
+              <>
+                <img
+                  src={resolvePublicImageSrc(images[currentImageIndex].url) || ""}
+                  alt={menu.korName}
+                />
+                {images.length > 1 && (
+                  <>
+                    <button
+                      className={`${styles.imageNav} ${styles.imageNavPrev}`}
+                      onClick={prevImage}
+                    >
+                      PREV
+                    </button>
+                    <button
+                      className={`${styles.imageNav} ${styles.imageNavNext}`}
+                      onClick={nextImage}
+                    >
+                      NEXT
+                    </button>
+                  </>
+                )}
+              </>
+            ) : menu.imageSrc ? (
+              <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
+            ) : (
+              <div className={styles.heroPlaceholder}>
+                <span>NO IMAGE</span>
+              </div>
+            )}
+          </div>
 
           <div className={styles.descriptionSection}>
             <span className={styles.sectionLabel}>DESCRIPTION</span>
@@ -352,8 +373,8 @@ export default function MenuDetailPage() {
               {menu.description || "NO DESCRIPTION AVAILABLE."}
             </p>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* ── 관련 메뉴 ──────────────────── */}
       {relatedMenus.length > 0 && (
@@ -394,36 +415,6 @@ export default function MenuDetailPage() {
       <footer className={styles.footer}>
         <p>© 2026 NCAFE. ALL RIGHTS RESERVED.</p>
       </footer>
-
-      {/* ── Sticky CTA ───────────────────── */}
-      <div className={styles.stickyCta}>
-        <div className={styles.stickyPrice}>
-          <span>TOTAL PRICE</span>
-          <strong>{totalPrice.toLocaleString()} KRW</strong>
-        </div>
-        <div className={styles.stickyButtons}>
-          <button
-            type="button"
-            className={`${styles.addBtn} ${!canOrder ? styles.addBtnDisabled : ""}`}
-            onClick={handleAddToCart}
-            disabled={!canOrder}
-          >
-            {menu.isSoldOut ? "SOLD OUT" : "ADD TO CART"}
-          </button>
-          <button
-            type="button"
-            className={`${styles.payNowBtn} ${!canOrder ? styles.addBtnDisabled : ""}`}
-            onClick={() => {
-              handleAddToCart();
-              if (canOrder) window.location.href = "/checkout";
-            }}
-            disabled={!canOrder}
-          >
-            BUY NOW
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
-
