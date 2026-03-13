@@ -1,6 +1,16 @@
 pluginManagement {
+    def fallbackRepos = [
+        'https://repo.maven.apache.org/maven2',
+        'https://repo1.maven.org/maven2',
+        'https://maven-central.storage-download.googleapis.com/maven2'
+    ]
+    def customRepo = System.getenv('MAVEN_MIRROR_URL')
+    def mavenRepos = customRepo ? [customRepo] + fallbackRepos : fallbackRepos
+
     repositories {
-        mavenCentral()
+        mavenRepos.each { repoUrl ->
+            maven { url repoUrl }
+        }
         gradlePluginPortal()
     }
 }
