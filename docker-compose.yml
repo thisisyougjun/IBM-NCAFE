@@ -5,8 +5,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: yj-dev-backend
-    ports:
-      - "8065:8081"
+    # ports 제거 (내부망 전용으로 변경)
+    # - "8065:8081"
     volumes:
       - ./upload:/app/upload
     environment:
@@ -17,7 +17,6 @@ services:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     restart: unless-stopped
-    profiles: ["with-db"]
     depends_on:
       - db
 
@@ -46,8 +45,8 @@ services:
       context: ./agent-server
       dockerfile: Dockerfile
     container_name: yj-dev-agent
-    ports:
-      - "${AGENT_PORT:-8165}:8000"
+    # ports 제거 (내부망 전용으로 변경)
+    # - "${AGENT_PORT:-8165}:8000"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - BACKEND_BASE_URL=http://backend:8081
@@ -56,21 +55,19 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=db
       - DB_PORT=5432
-    profiles: ["with-db"]
     depends_on:
       - db
     restart: unless-stopped
 
   db:
     image: pgvector/pgvector:pg17
-    profiles: [ "with-db" ]
     container_name: yj-dev-db
     environment:
       POSTGRES_DB: ncafedb
       POSTGRES_USER: ncafe
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5433:5432"
+    # ports 제거 (내부망 전용으로 변경)
+    # - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql

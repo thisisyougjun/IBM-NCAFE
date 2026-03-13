@@ -5,12 +5,12 @@ services:
       - AGENT_BASE_URL=http://agent-server:8000
       - SPRING_SECURITY_DEBUG=true
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=DEBUG
-    ports:
-      - "${BACKEND_PORT:-8065}:8081"
+    # ports:
+    #   - "${BACKEND_PORT:-8065}:8081"
 
   frontend:
     ports:
-      - "${FRONTEND_PORT:-3065}:3001"
+      - "127.0.0.1:${FRONTEND_PORT:-3065}:3001"
     environment:
       - NODE_ENV=development
       - PORT=3001
@@ -21,12 +21,12 @@ services:
     command: sh -lc "npm install && npm run dev -- --port 3001"
 
   agent-server:
-    ports:
-      - "${AGENT_PORT:-8165}:8000"
+    # ports:
+    #   - "${AGENT_PORT:-8165}:8000"
 
   db:
-    ports:
-      - "${DB_PORT:-5433}:5432"
+    # ports:
+    #   - "${DB_PORT:-5433}:5432"
 
 volumes:
   frontend_node_modules:
