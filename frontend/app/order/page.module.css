@@ -4,12 +4,17 @@
    =========================================== */
 
 .page {
-  --cart-panel-width: 450px;
-  --cart-panel-gap: 2rem;
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--order-text);
   padding-bottom: 5rem;
+  transform: none !important;
+  animation: orderFadeIn 0.6s ease forwards !important;
+}
+
+@keyframes orderFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ── Header ──────────────────────────────── */
@@ -313,6 +318,17 @@
 }
 
 /* ── Cart Sidebar ────────────────────────── */
+.cartDropdown {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.cartDropdown > div {
+  pointer-events: auto;
+}
+
 .cartOverlay {
   position: fixed;
   inset: 0;
@@ -332,8 +348,8 @@
   position: fixed;
   top: 84px;
   right: 2rem;
-   width: var(--cart-panel-width);
-   max-height: calc(100vh - 108px);
+  width: var(--cart-panel-width);
+  max-height: calc(100vh - 108px);
   background: var(--color-white);
   border: 1px solid var(--color-black);
   border-radius: 0.75rem;
@@ -341,6 +357,7 @@
   flex-direction: column;
   z-index: 1001;
   overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 .cartHeader {
@@ -366,12 +383,6 @@
   padding: 2rem;
 }
 
-.cartOpen .controls,
-.cartOpen .main,
-.cartOpen .footer {
-  margin-right: calc(var(--cart-panel-width) + var(--cart-panel-gap));
-  transition: margin-right var(--transition-fast);
-}
 
 .cartItem {
   display: flex;

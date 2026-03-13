@@ -53,6 +53,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 3rem 2rem 10rem;
+  padding-right: clamp(2rem, 34vw, 26rem);
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
   gap: 2rem;
@@ -74,9 +75,10 @@
 }
 
 .summaryPanel {
-  position: sticky;
-  top: 1.5rem;
-  align-self: start;
+  position: fixed;
+  top: 6.5rem;
+  right: max(2rem, calc((100vw - 1200px) / 2));
+  width: clamp(320px, 30vw, 380px);
   max-height: calc(100vh - 3rem);
   overflow: hidden;
   display: flex;
@@ -350,6 +352,7 @@
 @media (max-width: 960px) {
   .main {
     grid-template-columns: 1fr;
+    padding-right: 2rem;
     padding-bottom: 10rem;
   }
 

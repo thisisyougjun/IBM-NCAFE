@@ -138,13 +138,20 @@ export default function OrderPage() {
       }, {});
 
   return (
-    <div
-      className={[
-        styles.page,
-        "fade-in",
-        isCartOpen ? styles.cartOpen : "",
-      ].join(" ")}
-    >
+    <>
+      {/* ── 장바구니 드롭다운 ─────────────── */}
+      {isCartOpen && (
+        <div className={styles.cartDropdown}>
+          <CartDropdown onClose={() => setIsCartOpen(false)} />
+        </div>
+      )}
+
+      <div
+        className={[
+          styles.page,
+          isCartOpen ? styles.cartOpen : "",
+        ].join(" ")}
+      >
       {/* ── 헤더 ─────────────────────────── */}
       <header className={styles.header}>
         <div className={styles.headerInner}>
@@ -190,12 +197,6 @@ export default function OrderPage() {
         </div>
       </header>
 
-      {/* ── 장바구니 드롭다운 ─────────────── */}
-      {isCartOpen && (
-        <div className={styles.cartDropdown}>
-          <CartDropdown onClose={() => setIsCartOpen(false)} />
-        </div>
-      )}
 
       {/* ── 검색 & 카테고리 ─────────────── */}
       <div className={styles.controls}>
@@ -269,6 +270,7 @@ export default function OrderPage() {
         <p>© 2026 NCAFE. ALL RIGHTS RESERVED.</p>
       </footer>
     </div>
+    </>
   );
 }
 

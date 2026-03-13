@@ -70,6 +70,10 @@
   --order-text: var(--color-black);
   --order-text-secondary: var(--color-gray-600);
   --order-border: var(--color-black);
+
+  /* Cart Sidebar */
+  --cart-panel-width: 450px;
+  --cart-panel-gap: 2rem;
 }
 
 

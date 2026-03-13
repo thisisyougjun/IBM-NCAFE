@@ -29,6 +29,11 @@ services:
     container_name: yj-dev-frontend
     ports:
       - "3065:3001"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
     environment:
       - API_BASE_URL=http://backend:8081
       - AGENT_BASE_URL=http://agent-server:8000
