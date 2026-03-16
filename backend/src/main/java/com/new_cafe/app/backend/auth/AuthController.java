@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -61,10 +62,12 @@ public class AuthController {
             String refreshToken = refreshTokenService.createRefreshToken(adminUsername, "ADMIN");
             setRefreshCookie(response, refreshToken);
 
-            return ResponseEntity.ok(Map.of(
-                    "token",    accessToken,
-                    "username", adminUsername,
-                    "role",     "ADMIN"
+            return ResponseEntity.ok(buildAuthResponse(
+                    accessToken,
+                    null,
+                    adminUsername,
+                    null,
+                    "ADMIN"
             ));
         }
 
@@ -81,11 +84,12 @@ public class AuthController {
                     String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "ADMIN");
                     setRefreshCookie(response, refreshToken);
 
-                    return ResponseEntity.ok(Map.of(
-                            "token", accessToken,
-                            "name",  user.getName(),
-                            "username", user.getUsername(),
-                            "role",  "ADMIN"
+                    return ResponseEntity.ok(buildAuthResponse(
+                            accessToken,
+                            user.getName(),
+                            user.getUsername(),
+                            user.getEmail(),
+                            "ADMIN"
                     ));
                 }
             }
@@ -133,12 +137,12 @@ public class AuthController {
         String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "USER");
         setRefreshCookie(response, refreshToken);
 
-        return ResponseEntity.ok(Map.of(
-                "token", accessToken,
-                "name",  user.getName(),
-                "username", user.getUsername(),
-                "email", user.getEmail(),
-                "role",  "USER"
+        return ResponseEntity.ok(buildAuthResponse(
+                accessToken,
+                user.getName(),
+                user.getUsername(),
+                user.getEmail(),
+                "USER"
         ));
     }
 
@@ -168,12 +172,12 @@ public class AuthController {
         String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), role);
         setRefreshCookie(response, refreshToken);
 
-        return ResponseEntity.ok(Map.of(
-                "token", accessToken,
-                "name",  user.getName(),
-                "username", user.getUsername(),
-                "email", user.getEmail(),
-                "role",  role
+        return ResponseEntity.ok(buildAuthResponse(
+                accessToken,
+                user.getName(),
+                user.getUsername(),
+                user.getEmail(),
+                role
         ));
     }
 
@@ -260,4 +264,20 @@ public class AuthController {
     public record AdminLoginRequest(String username, String password) {}
     public record RegisterRequest(String name, String username, String email, String password) {}
     public record UserLoginRequest(String username, String password) {}
+
+    private Map<String, Object> buildAuthResponse(
+            String token,
+            String name,
+            String username,
+            String email,
+            String role
+    ) {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("token", token);
+        response.put("name", name);
+        response.put("username", username);
+        response.put("email", email);
+        response.put("role", role);
+        return response;
+    }
 }
