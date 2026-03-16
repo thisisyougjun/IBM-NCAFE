@@ -32,7 +32,7 @@ public class RefreshTokenService {
      * 해당 subject의 기존 토큰을 먼저 삭제하여 단일 세션 보장
      */
     @Transactional
-    public String createRefreshToken(String subject, String role) {
+    public String createRefreshToken(String subject, String role, Long userId) {
         // 기존 토큰 삭제 (단일 세션 정책)
         refreshTokenRepository.deleteBySubject(subject);
 
@@ -40,6 +40,7 @@ public class RefreshTokenService {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(tokenValue)
                 .subject(subject)
+                .userId(userId)
                 .role(role)
                 .expiresAt(LocalDateTime.now().plusDays(refreshExpirationDays))
                 .build();

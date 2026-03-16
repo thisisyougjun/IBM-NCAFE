@@ -59,8 +59,16 @@ public class AuthController {
             passwordEncoder.matches(request.password(), adminPasswordHash)) {
             
             String accessToken  = jwtUtil.generateToken(adminUsername, "ADMIN");
-            String refreshToken = refreshTokenService.createRefreshToken(adminUsername, "ADMIN");
-            setRefreshCookie(response, refreshToken);
+            // env 관리자 계정은 DB users 레코드가 없을 수 있으므로, 있을 때만 refresh token 발급
+            userRepository.findByUsername(adminUsername)
+                    .ifPresentOrElse(
+                            adminUser -> {
+                                String refreshToken = refreshTokenService.createRefreshToken(
+                                        adminUsername, "ADMIN", adminUser.getId());
+                                setRefreshCookie(response, refreshToken);
+                            },
+                            () -> log.warn("Skip refresh token issuance for env admin '{}': users row not found.", adminUsername)
+                    );
 
             return ResponseEntity.ok(buildAuthResponse(
                     accessToken,
@@ -81,7 +89,7 @@ public class AuthController {
                 
                 if (isAdmin) {
                     String accessToken  = jwtUtil.generateToken(user.getUsername(), "ADMIN");
-                    String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "ADMIN");
+                    String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "ADMIN", user.getId());
                     setRefreshCookie(response, refreshToken);
 
                     return ResponseEntity.ok(buildAuthResponse(
@@ -134,7 +142,7 @@ public class AuthController {
         userRepository.save(user);
 
         String accessToken  = jwtUtil.generateToken(user.getUsername(), "USER");
-        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "USER");
+        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), "USER", user.getId());
         setRefreshCookie(response, refreshToken);
 
         return ResponseEntity.ok(buildAuthResponse(
@@ -169,7 +177,7 @@ public class AuthController {
                 .anyMatch(r -> "ROLE_ADMIN".equals(r.getName())) ? "ADMIN" : "USER";
 
         String accessToken  = jwtUtil.generateToken(user.getUsername(), role);
-        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), role);
+        String refreshToken = refreshTokenService.createRefreshToken(user.getUsername(), role, user.getId());
         setRefreshCookie(response, refreshToken);
 
         return ResponseEntity.ok(buildAuthResponse(
@@ -203,7 +211,8 @@ public class AuthController {
         String newAccessToken = jwtUtil.generateToken(stored.getSubject(), stored.getRole());
 
         // Refresh Token Rotation: 기존 토큰 대체 후 새 쿠키 설정
-        String newRefreshToken = refreshTokenService.createRefreshToken(stored.getSubject(), stored.getRole());
+        String newRefreshToken = refreshTokenService.createRefreshToken(
+                stored.getSubject(), stored.getRole(), stored.getUserId());
         setRefreshCookie(response, newRefreshToken);
 
         return ResponseEntity.ok(Map.of("token", newAccessToken));

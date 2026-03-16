@@ -34,6 +34,10 @@ public class RefreshToken {
     @Column(nullable = false, length = 100)
     private String subject;
 
+    /** users.id FK (DB 스키마 not null 대응) */
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
     /** 권한 (ADMIN | USER) */
     @Column(nullable = false, length = 20)
     private String role;
