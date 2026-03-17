@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
     const session = await getSession();
     session.token = token;
     session.user = {
+      username: data.username,
       email: data.username,
       name: '관리자',
       role: 'ADMIN',

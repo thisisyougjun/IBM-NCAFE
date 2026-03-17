@@ -31,9 +31,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
                 String subject = jwtUtil.extractSubject(token);
-                // ← JWT Claim에서 실제 Role을 읽어 주입 (기존: 항상 ROLE_ADMIN 하드코딩)
                 String role = jwtUtil.extractRole(token);
-                String grantedRole = "ROLE_" + role;
+                // 하위 호환: role 값이 ADMIN 또는 ROLE_ADMIN 둘 다 올 수 있음
+                String normalizedRole = role != null ? role.trim() : "USER";
+                String grantedRole = normalizedRole.startsWith("ROLE_")
+                        ? normalizedRole
+                        : "ROLE_" + normalizedRole;
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(

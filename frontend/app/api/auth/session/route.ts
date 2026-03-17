@@ -9,9 +9,9 @@ import { getSession } from '@/app/lib/session';
 export async function GET() {
   const session = await getSession();
 
-  // Admin UI 접근 제어는 토큰이 아니라 user.role 기반으로 동작해야 하므로,
-  // session.user가 있으면 user를 반환한다. (토큰은 BFF 프록시 호출에서만 필요)
-  if (!session.user) {
+  // user 정보와 access token이 모두 있어야 유효 세션으로 간주
+  // (token 없이 user만 남아 있으면 /api/admin/* 호출 시 403이 발생할 수 있음)
+  if (!session.user || !session.token) {
     return NextResponse.json({ user: null });
   }
 
