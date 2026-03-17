@@ -75,10 +75,30 @@ public class RagController {
     @PostMapping("/documents")
     public ResponseEntity<Map<String, Object>> createDocument(@RequestBody Map<String, String> request) {
         try {
+            String title = request.get("title");
             String fileName = request.get("fileName");
             String content = request.get("content");
-            
-            RagDocument document = ragService.createDocument(fileName, content);
+
+            if (fileName == null || fileName.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "fileName은 필수입니다."
+                ));
+            }
+            if (content == null || content.isBlank()) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "message", "content는 필수입니다."
+                ));
+            }
+
+            // 제목이 전달됐고 본문에 markdown 제목이 없으면 자동 헤더를 붙여 저장
+            String normalizedContent = content;
+            if (title != null && !title.isBlank() && !content.trim().startsWith("#")) {
+                normalizedContent = "# " + title.trim() + "\n\n" + content;
+            }
+
+            RagDocument document = ragService.createDocument(fileName, normalizedContent);
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("document", document);

@@ -18,6 +18,11 @@ export default function RagManagementPage() {
   const [documents, setDocuments] = useState<RagDocument[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [quickTitle, setQuickTitle] = useState("");
+  const [quickFileName, setQuickFileName] = useState("");
+  const [quickContent, setQuickContent] = useState("");
+  const [quickPreview, setQuickPreview] = useState(false);
+  const [quickSaving, setQuickSaving] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<RagDocument | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -138,6 +143,46 @@ export default function RagManagementPage() {
     setIsCreateModalOpen(true);
   };
 
+  const handleQuickCreate = async () => {
+    if (!quickTitle.trim() || !quickFileName.trim() || !quickContent.trim()) {
+      toast.error("제목/파일명/내용을 모두 입력해주세요.");
+      return;
+    }
+
+    const normalizedFileName = quickFileName.endsWith(".md")
+      ? quickFileName
+      : `${quickFileName}.md`;
+
+    setQuickSaving(true);
+    try {
+      const response = await fetch("/api/admin/rag/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: quickTitle.trim(),
+          fileName: normalizedFileName.trim(),
+          content: quickContent.trim(),
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success("직접 작성 문서가 저장되었습니다.");
+        setQuickTitle("");
+        setQuickFileName("");
+        setQuickContent("");
+        setQuickPreview(false);
+        await fetchDocuments();
+      } else {
+        toast.error(data.message || "직접 작성 저장 실패");
+      }
+    } catch (error) {
+      console.error("Quick create failed:", error);
+      toast.error("직접 작성 저장 중 오류가 발생했습니다.");
+    } finally {
+      setQuickSaving(false);
+    }
+  };
+
   // 필터링된 문서 목록
   const filteredDocuments = documents.filter(
     (doc) =>
@@ -180,6 +225,85 @@ export default function RagManagementPage() {
           onChange={handleFileSelect}
           style={{ display: "none" }}
         />
+      </div>
+
+      {/* 직접 작성 영역 */}
+      <div className={styles.quickWritePanel}>
+        <div className={styles.quickWriteHeader}>
+          <h3>직접 작성</h3>
+          <button
+            type="button"
+            className={styles.previewToggle}
+            onClick={() => setQuickPreview((prev) => !prev)}
+          >
+            {quickPreview ? "편집 모드" : "미리보기"}
+          </button>
+        </div>
+
+        <div className={styles.quickWriteGrid}>
+          <div className={styles.formGroup}>
+            <label htmlFor="quick-title">제목</label>
+            <input
+              id="quick-title"
+              className={styles.input}
+              placeholder="예: 텀블러 할인 안내"
+              value={quickTitle}
+              onChange={(e) => setQuickTitle(e.target.value)}
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="quick-file-name">파일명 (.md)</label>
+            <input
+              id="quick-file-name"
+              className={styles.input}
+              placeholder="예: tumbler-discount.md"
+              value={quickFileName}
+              onChange={(e) => setQuickFileName(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {quickPreview ? (
+          <div className={styles.previewBox}>
+            <pre>{quickContent || "내용을 입력하면 여기에 미리보기 됩니다."}</pre>
+          </div>
+        ) : (
+          <div className={styles.formGroup}>
+            <label htmlFor="quick-content">내용 (Markdown)</label>
+            <textarea
+              id="quick-content"
+              className={styles.textarea}
+              rows={10}
+              placeholder="# 제목&#10;&#10;고객 안내 내용을 작성해주세요."
+              value={quickContent}
+              onChange={(e) => setQuickContent(e.target.value)}
+            />
+          </div>
+        )}
+
+        <div className={styles.quickWriteActions}>
+          <button
+            type="button"
+            className={styles.cancelButton}
+            onClick={() => {
+              setQuickTitle("");
+              setQuickFileName("");
+              setQuickContent("");
+              setQuickPreview(false);
+            }}
+            disabled={quickSaving}
+          >
+            초기화
+          </button>
+          <button
+            type="button"
+            className={styles.saveButton}
+            onClick={handleQuickCreate}
+            disabled={quickSaving}
+          >
+            {quickSaving ? "저장 중..." : "직접 작성 저장"}
+          </button>
+        </div>
       </div>
 
       {/* 검색 바 */}

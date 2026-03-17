@@ -85,6 +85,67 @@
   font-size: var(--text-sm);
 }
 
+/* 직접 작성 영역 */
+.quickWritePanel {
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  background: white;
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.quickWriteHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}
+
+.quickWriteHeader h3 {
+  font-size: var(--text-xl);
+  color: var(--color-primary-700);
+}
+
+.previewToggle {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--color-gray-700);
+  font-size: var(--text-sm);
+}
+
+.quickWriteGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.previewBox {
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-50);
+  padding: var(--space-4);
+  min-height: 220px;
+  margin-bottom: var(--space-4);
+}
+
+.previewBox pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--text-sm);
+  color: var(--color-gray-700);
+  line-height: 1.6;
+}
+
+.quickWriteActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
 /* 검색 바 */
 .searchBar {
   position: relative;
@@ -412,6 +473,10 @@
   .header {
     flex-direction: column;
     gap: var(--space-4);
+  }
+
+  .quickWriteGrid {
+    grid-template-columns: 1fr;
   }
 
   .grid {
