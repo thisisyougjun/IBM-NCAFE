@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from "react";
 
 /* ── 타입 정의 ───────────────────────────── */
 export interface CartItem {
@@ -28,7 +28,13 @@ interface CartContextType {
   getTotalItems: () => number;
 }
 
-const STORAGE_KEY = "ncafe_cart_v1";
+const STORAGE_KEY_BASE = "ncafe_cart_v1";
+const GUEST_STORAGE_KEY = `${STORAGE_KEY_BASE}:guest`;
+
+type SessionUser = {
+  username?: string;
+  email?: string;
+} | null;
 
 /* ── Context 생성 ──────────────────────── */
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -45,29 +51,101 @@ export function getCartItemOptionsKey(options?: CartItem["options"]) {
 /* ── Provider 컴포넌트 ───────────────────── */
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [storageKey, setStorageKey] = useState(GUEST_STORAGE_KEY);
+  const itemsRef = useRef<CartItem[]>([]);
+  const storageKeyRef = useRef(GUEST_STORAGE_KEY);
 
-  // localStorage → state 로드
+  useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
+  useEffect(() => {
+    storageKeyRef.current = storageKey;
+  }, [storageKey]);
+
+  const readCartFromStorage = useCallback((key: string): CartItem[] => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  const resolveStorageKey = useCallback((user: SessionUser) => {
+    if (!user) return GUEST_STORAGE_KEY;
+    const userKey = user.username || user.email;
+    if (!userKey) return GUEST_STORAGE_KEY;
+    return `${STORAGE_KEY_BASE}:user:${userKey}`;
+  }, []);
+
+  const syncCartBySession = useCallback(
+    async (targetUser?: SessionUser) => {
+      try {
+        const user =
+          targetUser !== undefined
+            ? targetUser
+            : await fetch("/api/auth/session", { cache: "no-store" })
+                .then((res) => (res.ok ? res.json() : { user: null }))
+                .then((data) => data?.user ?? null)
+                .catch(() => null);
+
+        const nextKey = resolveStorageKey(user);
+        const currentKey = storageKeyRef.current;
+
+        if (currentKey === nextKey) return;
+
+        // 현재 장바구니를 기존 키에 저장하고, 다음 키의 장바구니를 로드합니다.
+        try {
+          localStorage.setItem(currentKey, JSON.stringify(itemsRef.current));
+        } catch {
+          // ignore
+        }
+
+        setItems(readCartFromStorage(nextKey));
+        setStorageKey(nextKey);
+      } catch {
+        // ignore
+      }
+    },
+    [readCartFromStorage, resolveStorageKey]
+  );
+
+  // 초기 장바구니 로드 (guest) 후 세션 기준 장바구니로 동기화
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        setItems(parsed);
-      }
+      setItems(readCartFromStorage(GUEST_STORAGE_KEY));
     } catch {
       // ignore
     }
-  }, []);
+    void syncCartBySession();
+  }, [readCartFromStorage, syncCartBySession]);
+
+  // 로그인/로그아웃 이벤트가 발생하면 세션 사용자에 맞는 장바구니로 전환
+  useEffect(() => {
+    const handleSessionChanged = () => {
+      void syncCartBySession();
+    };
+
+    window.addEventListener("login", handleSessionChanged);
+    window.addEventListener("logout", handleSessionChanged);
+
+    return () => {
+      window.removeEventListener("login", handleSessionChanged);
+      window.removeEventListener("logout", handleSessionChanged);
+    };
+  }, [syncCartBySession]);
 
   // state → localStorage 저장
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      localStorage.setItem(storageKey, JSON.stringify(items));
     } catch {
       // ignore
     }
-  }, [items]);
+  }, [items, storageKey]);
 
   const addToCart = useCallback((item: Omit<CartItem, "quantity">) => {
     const key = getCartItemOptionsKey(item.options);

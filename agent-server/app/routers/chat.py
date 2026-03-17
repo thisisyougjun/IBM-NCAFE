@@ -25,12 +25,11 @@ async def handle_chat(request: ChatRequest):
 
     async def event_generator():
         # Tool Call 루프를 포함하는 에이전트 스트리밍
-        loop = asyncio.get_event_loop()
-        chunks = await loop.run_in_executor(
-            None, lambda: list(agent_chat_stream(gemini_messages))
-        )
-        for chunk in chunks:
+        # 기존에는 모든 chunk를 list로 모은 뒤 전송해서 "한번에 출력"처럼 보였음.
+        for chunk in agent_chat_stream(gemini_messages):
             yield {"data": json.dumps({"content": chunk})}
+            # 이벤트 루프에 제어를 잠깐 넘겨 실제 실시간 전송이 되도록 함
+            await asyncio.sleep(0)
         yield {"data": "[DONE]"}
 
     return EventSourceResponse(event_generator())
