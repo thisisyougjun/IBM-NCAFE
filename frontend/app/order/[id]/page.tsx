@@ -11,6 +11,25 @@ import {
   ArrowLeft,
 } from "lucide-react";
 
+/* ── 모자이크 로딩 컴포넌트 ───────────────── */
+function MosaicImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const [loaded, setLoaded] = useState(false);
+  
+  // URL이 바뀌면 로딩 상태 초기화
+  useEffect(() => {
+    setLoaded(false);
+  }, [src]);
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onLoad={() => setLoaded(true)}
+      className={`${className || ""} ${loaded ? styles.mosaicLoaded : styles.mosaicLoading}`}
+    />
+  );
+}
+
 /* ── 타입 정의 ───────────────────────────── */
 interface MenuDetail {
   id: number;
@@ -337,9 +356,10 @@ export default function MenuDetailPage() {
           <div className={styles.heroImage}>
             {images.length > 0 ? (
               <>
-                <img
+                <MosaicImage
                   src={resolvePublicImageSrc(images[currentImageIndex].url) || ""}
                   alt={menu.korName}
+                  className={styles.detailImage}
                 />
                 {images.length > 1 && (
                   <>
@@ -359,7 +379,11 @@ export default function MenuDetailPage() {
                 )}
               </>
             ) : menu.imageSrc ? (
-              <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
+              <MosaicImage 
+                src={resolvePublicImageSrc(menu.imageSrc) || ""} 
+                alt={menu.korName} 
+                className={styles.detailImage} 
+              />
             ) : (
               <div className={styles.heroPlaceholder}>
                 <span>NO IMAGE</span>
@@ -390,9 +414,10 @@ export default function MenuDetailPage() {
                 >
                   <div className={styles.relatedImage}>
                     {item.imageSrc ? (
-                      <img
+                      <MosaicImage
                         src={resolvePublicImageSrc(item.imageSrc) || ""}
                         alt={item.korName}
+                        className={styles.relatedImgElement}
                       />
                     ) : (
                       <div className={styles.relatedPlaceholder}>

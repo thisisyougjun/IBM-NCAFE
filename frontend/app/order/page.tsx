@@ -277,6 +277,7 @@ export default function OrderPage() {
 /* ── 메뉴 카드 컴포넌트 ──────────────────── */
 function MenuCard({ menu }: { menu: MenuItem }) {
   const { addToCart } = useCart();
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -302,7 +303,12 @@ function MenuCard({ menu }: { menu: MenuItem }) {
         >
           <div className={styles.cardImage}>
             {menu.imageSrc ? (
-              <img src={resolvePublicImageSrc(menu.imageSrc) || ""} alt={menu.korName} />
+              <img 
+                src={resolvePublicImageSrc(menu.imageSrc) || ""} 
+                alt={menu.korName} 
+                onLoad={() => setImgLoaded(true)}
+                className={imgLoaded ? styles.mosaicLoaded : styles.mosaicLoading}
+              />
             ) : (
               <div className={styles.cardPlaceholder}>
                 <span>NO IMAGE</span>

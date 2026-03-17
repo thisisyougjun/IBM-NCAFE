@@ -276,10 +276,21 @@
   height: 100%;
   object-fit: cover;
   filter: grayscale(100%);
-  transition: var(--transition-smooth);
+  transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.heroImage:hover img {
+.heroImage img.mosaicLoading {
+  filter: blur(15px) grayscale(100%);
+  transform: scale(1.1);
+}
+
+.heroImage img.mosaicLoaded {
+  filter: grayscale(100%);
+  transform: scale(1);
+}
+
+.heroImage:hover img,
+.heroImage:hover img.mosaicLoaded {
   filter: grayscale(0%);
 }
 
@@ -370,10 +381,21 @@
   height: 100%;
   object-fit: cover;
   filter: grayscale(100%);
-  transition: var(--transition-smooth);
+  transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.relatedCard:hover img {
+.relatedImage img.mosaicLoading {
+  filter: blur(15px) grayscale(100%);
+  transform: scale(1.1);
+}
+
+.relatedImage img.mosaicLoaded {
+  filter: grayscale(100%);
+  transform: scale(1);
+}
+
+.relatedCard:hover img,
+.relatedCard:hover img.mosaicLoaded {
   filter: grayscale(0%);
 }
 
