@@ -34,11 +34,50 @@ export default function CheckoutPage() {
 
     setSubmitting(true);
     try {
-      // 모의 결제: 실제 PG 연동 없이 완료 처리
-      await new Promise((r) => setTimeout(r, 600));
+      const orderPayload = {
+        orderType,
+        paymentMethod: "CARD",
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+        address: orderType === "DELIVERY" ? address.trim() : "",
+        notes: notes.trim(),
+        items: items.map((item) => ({
+          menuId: item.menuId,
+          menuName: item.korName,
+          menuCategory: item.categoryName,
+          quantity: item.quantity,
+          price: item.price,
+          options: (item.options || []).map((option) => ({
+            name: option.name,
+            value: option.value,
+            priceDelta: option.priceDelta,
+          })),
+        })),
+      };
+
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        alert("주문 저장을 위해 로그인이 필요합니다.");
+        router.push(`/login?redirect=${encodeURIComponent("/checkout")}`);
+        return;
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error?.message || "주문 저장에 실패했습니다. 다시 시도해주세요.");
+      }
+
+      const result = await response.json().catch(() => null);
       clearCart();
-      alert("결제가 완료되었습니다. 주문이 접수되었습니다.");
+      alert(`결제가 완료되었습니다. 주문번호: ${result?.orderNumber ?? "-"}`);
       router.replace("/order");
+    } catch (error: any) {
+      alert(error?.message || "결제/주문 처리 중 오류가 발생했습니다.");
     } finally {
       setSubmitting(false);
     }
