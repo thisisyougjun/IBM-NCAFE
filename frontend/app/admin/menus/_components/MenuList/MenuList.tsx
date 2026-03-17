@@ -16,6 +16,8 @@ export default function MenuList({
   setMenus,
 }: MenuListProps) {
   const router = useRouter();
+  const activeMenus = menus.filter((menu) => !menu.isSoldOut);
+  const soldOutMenus = menus.filter((menu) => menu.isSoldOut);
 
   const updateMenu = async (id: number, payload: Record<string, unknown>) => {
     const res = await fetch(`/api/admin/menu/${id}`, {
@@ -72,18 +74,47 @@ export default function MenuList({
 
   return (
     <div>
-      <div className={styles.grid}>
-        {menus.map((menu) => (
-          <MenuCard
-            key={menu.id}
-            menu={menu}
-            detailHref={`/admin/menu/${menuToSlug(menu)}`}
-            onToggleSoldOut={() => handleToggleSoldOut(menu)}
-            onUpdatePrice={(price) => handleUpdatePrice(menu, price)}
-            onEditOptions={() => handleEditOptions(menu)}
-          />
-        ))}
-      </div>
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>판매중 메뉴</h2>
+          <span className={styles.sectionCount}>{activeMenus.length}개</span>
+        </div>
+        <div className={styles.grid}>
+          {activeMenus.map((menu) => (
+            <MenuCard
+              key={menu.id}
+              menu={menu}
+              detailHref={`/admin/menu/${menuToSlug(menu)}`}
+              onToggleSoldOut={() => handleToggleSoldOut(menu)}
+              onUpdatePrice={(price) => handleUpdatePrice(menu, price)}
+              onEditOptions={() => handleEditOptions(menu)}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>품절 메뉴</h2>
+          <span className={styles.sectionCount}>{soldOutMenus.length}개</span>
+        </div>
+        {soldOutMenus.length === 0 ? (
+          <p className={styles.emptySection}>현재 품절 메뉴가 없습니다.</p>
+        ) : (
+          <div className={styles.grid}>
+            {soldOutMenus.map((menu) => (
+              <MenuCard
+                key={menu.id}
+                menu={menu}
+                detailHref={`/admin/menu/${menuToSlug(menu)}`}
+                onToggleSoldOut={() => handleToggleSoldOut(menu)}
+                onUpdatePrice={(price) => handleUpdatePrice(menu, price)}
+                onEditOptions={() => handleEditOptions(menu)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

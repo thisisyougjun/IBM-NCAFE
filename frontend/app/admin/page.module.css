@@ -1,0 +1,187 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.refreshButton {
+  border: 1px solid var(--color-black);
+  background: var(--color-white);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.refreshButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kpiGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.kpiCard {
+  border: 1px solid var(--color-gray-300);
+  background: var(--color-white);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kpiLabel {
+  color: var(--color-gray-600);
+  font-size: 12px;
+}
+
+.kpiValue {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.statusPanel,
+.tablePanel {
+  border: 1px solid var(--color-gray-300);
+  background: var(--color-white);
+  padding: 14px;
+}
+
+.panelTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.statusChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.statusChip {
+  border: 1px solid var(--color-gray-300);
+  background: var(--color-white);
+  padding: 8px 10px;
+  min-width: 110px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.statusChipActive {
+  border-color: var(--color-black);
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.tableHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchInput,
+.statusFilter,
+.statusSelect {
+  border: 1px solid var(--color-gray-300);
+  background: var(--color-white);
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.searchInput {
+  min-width: 260px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th,
+.table td {
+  border-top: 1px solid var(--color-gray-200);
+  padding: 10px 8px;
+  vertical-align: top;
+  text-align: left;
+}
+
+.table th {
+  font-size: 12px;
+  color: var(--color-gray-600);
+  border-top: 0;
+}
+
+.orderNumber {
+  font-weight: 600;
+}
+
+.subText {
+  color: var(--color-gray-600);
+  font-size: 12px;
+}
+
+.itemList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.empty {
+  border-top: 1px solid var(--color-gray-200);
+  padding: 20px 4px;
+  color: var(--color-gray-600);
+  font-size: 13px;
+}
+
+@media (max-width: 1024px) {
+  .kpiGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tableHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchInput {
+    min-width: 0;
+    width: 100%;
+  }
+}
+

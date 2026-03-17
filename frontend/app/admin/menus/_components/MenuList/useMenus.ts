@@ -67,7 +67,13 @@ export function useMenus(
           })),
         );
 
-        setMenus(data.menus);
+        const sortedMenus = [...(data.menus || [])].sort((a: MenuResponse, b: MenuResponse) => {
+          // 품절 메뉴를 하단으로 정렬해서 상태가 자연스럽게 모이도록 처리
+          if (a.isSoldOut !== b.isSoldOut) return a.isSoldOut ? 1 : -1;
+          return a.korName.localeCompare(b.korName, "ko");
+        });
+
+        setMenus(sortedMenus);
 
         // 백엔드 데이터를 프론트엔드 Menu 타입으로 변환
         // const mappedMenus: MenuResponse[] = data.map((item: any) => ({

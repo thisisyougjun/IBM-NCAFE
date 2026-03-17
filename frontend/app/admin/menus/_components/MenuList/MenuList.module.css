@@ -1,7 +1,37 @@
+.section {
+    margin-bottom: 2rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.sectionTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-gray-900);
+}
+
+.sectionCount {
+    font-size: 0.8rem;
+    color: var(--color-gray-600);
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
+}
+
+.emptySection {
+    border: 1px dashed var(--color-gray-300);
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-600);
+    padding: 1rem;
+    font-size: 0.875rem;
 }
 
 .empty {
